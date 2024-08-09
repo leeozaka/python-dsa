@@ -2,36 +2,32 @@
 #include "data.h"
 
 //doubly linked list
-/*
-  get() – Return an element from the list at any given position.
-    insert() – Insert an element at any position of the list.
-    insertAt()
-    remove() – Remove the first occurrence of any element from a non-empty list.
-    removeAt() – Remove the element at a specified location from a non-empty list.
-    replace() – Replace an element at any position by another element.
-    size() – Return the number of elements in the list.
-    isEmpty() – Return true if the list is empty, otherwise return false.
-    isFull() – Return true if the list is full, otherwise return false.
- *
- */
 
 #ifndef DLL_H_ 
 #define DLL_H_ 
 
+typedef struct DLL_NODE_ dll_node_t;
+typedef struct DLL dll_t;
+
+typedef struct DLL_NODE_ {
+    data_t *data; 
+    struct DLL_NODE_ *prev;
+    struct DLL_NODE_ *next;
+} dll_node_t;
+
 typedef struct DLL {
-    data_t data; 
-    uint64_t size; 
-    struct DLL *prev;
-    struct DLL *next;
+    dll_node_t *head;
+    dll_node_t *tail;
+    uint64_t size;
 } dll_t;
 
-uint8_t insert(data_t data, dll_t **head);
-uint8_t insertAt();
-uint8_t remove();
-uint8_t removeAt();
-uint8_t replace();
-uint64_t size();
-uint8_t isEmpty();
-uint8_t isFull(dll_t **head);
+dll_node_t* node_create();
+data_t* get(uint64_t index, dll_t *head);
+uint8_t insert(data_t data, dll_t **dll);
+uint8_t insertAt(data_t data, uint64_t index, dll_node_t **head);
+uint8_t remove(data_t data, dll_node_t **head);
+uint8_t removeAt(uint64_t index, dll_t **dll);
+uint8_t replace(data_t data, uint64_t index, dll_node_t **head);
+uint64_t position(data_t data, dll_node_t **head);
 
 #endif 
