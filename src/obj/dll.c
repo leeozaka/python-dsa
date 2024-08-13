@@ -2,14 +2,26 @@
 #include <stdlib.h>
 
 
-dll_node_t* node_create() {
-    dll_node_t* new = calloc(1, sizeof(dll_node_t));
-    new->data = calloc(1, sizeof(data_t));
+dll_t* dll_create() {
+    dll_t *new = calloc(1, sizeof(dll_t));
+    new->head = NULL;
+    new->tail = NULL;
+    new->size = 0;
 
     return new;
 }
 
-data_t* get(uint64_t index, dll_t *dll) {
+dll_node_t* node_create(ll_t *ll) {
+    dll_node_t *new = calloc(1, sizeof(dll_node_t));
+    new->ll = ll;
+    new->prev = NULL;
+    new->next = NULL;
+
+
+    return new;
+}
+
+ll_t* get(uint64_t index, dll_t *dll) {
     if (index >= dll->size) {
         return NULL;
     }
@@ -19,12 +31,12 @@ data_t* get(uint64_t index, dll_t *dll) {
         current = current->next;
     }
 
-    return current->data;
+    return current->ll;
 }
 
-uint8_t insert(data_t data, dll_t **dll) {
-    dll_node_t *new = node_create();
-    new->data = &data;
+uint8_t insert(ll_t *ll, dll_t **dll) {
+    dll_node_t *new = node_create(ll);
+
     new->next = NULL;
     new->prev = NULL;
 
@@ -42,18 +54,22 @@ uint8_t insert(data_t data, dll_t **dll) {
     return 1;
 }
 
-uint8_t insertAt(data_t data, uint64_t index, dll_node_t **head) {
+uint8_t insertAt(ll_t *ll, uint64_t index, dll_t **dll) {
     if (index == 0) {
-        dll_node_t *new = node_create();
-        new->data = &data;
-        new->next = *head;
-        new->prev = NULL;
-        (*head)->prev = new;
-        *head = new;
+        dll_node_t *new = node_create(ll);
+        new->next = (*dll)->head;
+        if ((*dll)->head != NULL) {
+            (*dll)->head->prev = new;
+        }
+        (*dll)->head = new;
+        if ((*dll)->tail == NULL) {
+            (*dll)->tail = new;
+        }
+        (*dll)->size++;
         return 1;
     }
 
-    dll_node_t *current = *head;
+    dll_node_t *current = (*dll)->head;
     for (uint64_t i = 0; i < index; i++) {
         if (current->next == NULL) {
             return 0;
@@ -61,20 +77,21 @@ uint8_t insertAt(data_t data, uint64_t index, dll_node_t **head) {
         current = current->next;
     }
 
-    dll_node_t *new = node_create();
-    new->data = &data;
+    dll_node_t *new = node_create(ll);
     new->next = current;
     new->prev = current->prev;
     current->prev->next = new;
     current->prev = new;
 
+    (*dll)->size++;
+
     return 1;
 }
 
-uint8_t remove(data_t data, dll_node_t **head) {
+uint8_t remove_dll(ll_t *ll, dll_node_t **head) {
     dll_node_t *current = *head;
     while (current != NULL) {
-        if (current->data == &data) {
+        if (current->ll == ll) {
             if (current->prev == NULL) {
                 *head = current->next;
                 (*head)->prev = NULL;
@@ -85,7 +102,7 @@ uint8_t remove(data_t data, dll_node_t **head) {
                 current->next->prev = current->prev;
             }
 
-            free(current->data);
+            free(current->ll);
             free(current);
             return 1;
         }
@@ -106,7 +123,12 @@ uint8_t removeAt(uint64_t index, dll_t **dll) {
 
     if (current->prev == NULL) {
         (*dll)->head = current->next;
-        (*dll)->head->prev = NULL;
+
+        //(*dll)->head->prev = NULL;
+
+        if ((*dll)->head != NULL) {
+            (*dll)->head->prev = NULL;
+        }
     } else if (current->next == NULL) {
         current->prev->next = NULL;
     } else {
@@ -114,12 +136,12 @@ uint8_t removeAt(uint64_t index, dll_t **dll) {
         current->next->prev = current->prev;
     }
 
-    free(current->data);
+    free(current->ll);
     free(current);
 
     return 1;
 }
-uint8_t replace(data_t data, uint64_t index, dll_node_t **head) {
+uint8_t replace(ll_t *ll, uint64_t index, dll_node_t **head) {
     dll_node_t *current = *head;
     for (uint64_t i = 0; i < index; i++) {
         if (current->next == NULL) {
@@ -128,16 +150,16 @@ uint8_t replace(data_t data, uint64_t index, dll_node_t **head) {
         current = current->next;
     }
 
-    current->data = &data;
+    current->ll = ll;
 
     return 1;
 }
 
-uint64_t position(data_t data, dll_node_t **head) {
+uint64_t position(ll_t *ll, dll_node_t **head) {
     dll_node_t *current = *head;
     uint64_t i = 0;
     while (current != NULL) {
-        if (current->data == &data) {
+        if (current->ll == ll) {
             return i;
         }
         current = current->next;

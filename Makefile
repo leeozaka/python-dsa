@@ -4,7 +4,7 @@ OBJ = ${SRC:.c=.o}
 OUT = main
 
 CC = clang
-CFLAGS = -std=c11  -O3
+CFLAGS = -std=c11 -O3
 clang = $(shell which clang 2> /dev/null)
 ifeq (, $(clang))
 	CC = gcc
@@ -14,6 +14,7 @@ $(OUT): $(OBJ)
 	@$(CC) $^ -o $@
 	@printf "\e[33mLinking\e[90m %s\e[0m\n" $@
 	@printf "\e[34mDone!\e[0m\n"
+	@rm -f $(OBJ)
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@

@@ -1,10 +1,10 @@
-#include <stdint.h>
-
-#ifndef DATA_H 
+#ifndef DATA_H
 #define DATA_H
 
+#include <stdint.h>
+
 typedef struct DATA_H {
-    int n; 
+    char token[32];
 } data_t;
 
-#endif // !
+#endif
