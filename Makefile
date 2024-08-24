@@ -4,7 +4,7 @@ OBJ = ${SRC:.c=.o}
 OUT = main
 
 CC = clang
-CFLAGS = -std=c11 -O3
+CFLAGS = -std=c11 -O3 -Wall -Wextra
 clang = $(shell which clang 2> /dev/null)
 ifeq (, $(clang))
 	CC = gcc
