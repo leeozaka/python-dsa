@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,22 +6,6 @@
 #include "include/data.h"
 #include "include/dll.h"
 #include "include/ll.h"
-
-char *text_to_tokenize_1 = "    def hello(a, b):";
-char *text_to_tokenize_2 = "  print(a + b)";
-char *text_to_tokenize_3 = "  return a + b";
-
-enum {
-  KEYWORD,
-  IDENTIFIER,
-  OPERATOR,
-  PUNCTUATION,
-  LITERAL,
-  COMMENT,
-  WHITESPACE,
-  NEWLINE,
-  END
-};
 
 int classifier(char *c) {
   switch (*c) {
@@ -40,6 +25,7 @@ int classifier(char *c) {
   case ',':
   case ':':
   case '.':
+  case ';':
     return PUNCTUATION;
   case '+':
   case '-':
@@ -62,70 +48,68 @@ int classifier(char *c) {
   }
 }
 
-// Function to check if a string starts with exactly 4 spaces
-// feito pelo gpt kkkkk
 int startsWithFourSpaces(const char *str) {
-  // Check if the string is at least 4 characters long
   if (strlen(str) < 4) {
-    return 0; // Not enough characters
+    return 0; 
   }
 
-  // Check the first 4 characters
   for (int i = 0; i < 4; ++i) {
     if (str[i] != ' ') {
-      return 0; // Found a non-space character
+      return 0;
     }
   }
 
-  return 1; // The string starts with exactly 4 spaces
+  return 1;
 }
 
 int main() {
-  dll_t *main = dll_create();
+  int type;
+  size_t index = 0;
+  char token_text[36] = "", *line;
   token_data_t token;
-  char token_text[36] = "";
 
-  insert(ll_create(), &main);
+  line = (char *)calloc(256, sizeof(char));
+  dll_t *main = dll_create();
 
-  // ll_insert(token, &main->head->ll);
-  // ll_insert(token1, &main->head->ll);
-  // ll_insert(token3, &main->head->ll);
-  // ll_insert(token2, &main->head->ll);
+  FILE *stream = fopen("test.py", "r");
 
-  // init first linked list for main dll
-  insert(ll_create(), &main);
+  while (fgets(line, 256, stream)) {
+    dll_node_t *actual = insert(ll_create(), &main);
 
-  size_t i = 0, j = 0;
+    while (*line) {
+      if (startsWithFourSpaces(line)) {
+        strcpy(token.token, "");
+        ll_insert(token, &actual->ll);
+        line += 4;
+        continue;
+      }
 
-  // char *text_to_tokenize_1 = "    def hello(a, b):";
-  while (*text_to_tokenize_1) {
-    // if (strcmp(text_to_tokenize_1, "    ") == 0) {
-    if (startsWithFourSpaces(text_to_tokenize_1)) {
-      strcpy(token.token, "    ");
-      ll_insert(token, &main->head->ll);
-      text_to_tokenize_1 += 4;
-      continue;
+      if (isspace(*line)) {
+        line++;
+        continue;
+      }
+
+      type = classifier(line);
+      while (type != WHITESPACE && type != PUNCTUATION ) {
+        token_text[index++] = *line;
+        line++;
+
+        type = classifier(line);
+      }
+
+      strcpy(token.token, token_text);
+
+      ll_insert(token, &actual->ll);
+
+      memset(token_text, 0, sizeof(token_text));
+      index = 0;
+
+      line++;
     }
 
-    int type = classifier(text_to_tokenize_1);
-    while (type != WHITESPACE && type != PUNCTUATION && type != NEWLINE) {
-      token_text[j] = *text_to_tokenize_1;
-      j++;
-      text_to_tokenize_1++;
-
-      type = classifier(text_to_tokenize_1);
-    }
-
-    token_text[j] = '\0';
-    strcpy(token.token, token_text);
-
-    ll_insert(token, &main->head->ll);
-
-    strcpy(token_text, "");
-    j = 0;
-    text_to_tokenize_1++;
+    ll_show(actual->ll);
   }
 
-  ll_show(main->head->ll);
+  fclose(stream);
   return 0;
 }

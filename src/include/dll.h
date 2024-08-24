@@ -22,7 +22,7 @@ typedef struct DLL {
 dll_t *dll_create();
 dll_node_t *node_create(ll_t *ll);
 
-uint8_t insert(ll_t *ll, dll_t **dll);
+dll_node_t *insert(ll_t *ll, dll_t **dll);
 uint8_t insertAt(ll_t *ll, uint64_t index, dll_t **dll);
 uint8_t remove_dll(ll_t *ll, dll_node_t **head);
 uint8_t removeAt(uint64_t index, dll_t **dll);

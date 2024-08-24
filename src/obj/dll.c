@@ -32,7 +32,7 @@ ll_t *get(size_t index, dll_t *dll) {
   return current->ll;
 }
 
-uint8_t insert(ll_t *ll, dll_t **dll) {
+dll_node_t* insert(ll_t *ll, dll_t **dll) {
   dll_node_t *new = node_create(ll);
 
   new->next = NULL;
@@ -49,7 +49,7 @@ uint8_t insert(ll_t *ll, dll_t **dll) {
 
   (*dll)->size++;
 
-  return 1;
+  return new;
 }
 
 uint8_t insertAt(ll_t *ll, size_t index, dll_t **dll) {

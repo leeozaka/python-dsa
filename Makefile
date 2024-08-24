@@ -14,7 +14,6 @@ $(OUT): $(OBJ)
 	@$(CC) $^ -o $@
 	@printf "\e[33mLinking\e[90m %s\e[0m\n" $@
 	@printf "\e[34mDone!\e[0m\n"
-	@rm -f $(OBJ)
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
