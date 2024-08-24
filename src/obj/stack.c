@@ -11,14 +11,15 @@ stacks_t *stack_create() {
     return stack;
 }
 
-stack_node_t* stack_node_create(stack_node_t *data) {
+ stack_node_t* stack_node_create(stack_node_t* data) {
     stack_node_t *node = (stack_node_t *)malloc(sizeof(stack_node_t));
     node->data = data;
     node->next = NULL;
     return node;
 }
 
-uint8_t push(stack_node_t *data, stacks_t **stack) {
+
+ uint8_t push(stack_node_t *data, stacks_t **stack) {
     stack_node_t *node = stack_node_create(data);
     node->next = (*stack)->top;
     (*stack)->top = node;

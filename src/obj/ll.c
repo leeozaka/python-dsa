@@ -1,5 +1,6 @@
 #include "../include/ll.h"
 #include <stdlib.h>
+#include <string.h>
 
 ll_t *ll_create() {
     ll_t *new = calloc(1, sizeof(ll_t));
@@ -47,4 +48,24 @@ uint8_t ll_insert(data_t data, ll_t **ll) {
     (*ll)->size++;
 
     return 1;
+}
+
+uint64_t ll_position(data_t data, ll_node_t **head) {
+    ll_node_t *current = *head;
+    uint64_t i = 0;
+    while (current != NULL) {
+        // if (*(current->data) == data) {
+        //  return i;
+        //}
+
+        if (strcmp(current->data->token, data.token) == 0) {
+            return i;
+        }
+
+        current = current->next;
+        i++;
+    }
+
+    return -1;
+
 }

@@ -4,9 +4,9 @@
 #include <stdint.h>
 
 typedef struct STACK_DATA_ {
-    char identificador[32];
-    int valor;
-    struct STACK_DATA_ *ponteiro;
+    char id[32];
+    int value;
+    struct STACK_DATA_ *p;
 } stack_data_t;
 
 #endif
