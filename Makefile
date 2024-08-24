@@ -23,3 +23,5 @@ $(OUT): $(OBJ)
 clean:
 	@rm -f $(OUT) $(OBJ)
 	@printf "\e[34mAll clear!\e[0m\n"
+
+

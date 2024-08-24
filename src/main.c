@@ -1,19 +1,92 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "include/data.h"
 #include "include/dll.h"
 #include "include/ll.h"
 
-int main() {
-  dll_t *dll = dll_create();
-  ll_t *ll = ll_create();
+const char *text_to_tokenize_1 = "def hello(a, b):";
+const char *text_to_tokenize_2 = "  print(a + b)";
+const char *text_to_tokenize_3 = "  return a + b";
 
-  data_t data1 = {1};
-  data_t data2 = {2};
+enum {
+    KEYWORD,
+    IDENTIFIER,
+    OPERATOR,
+    PUNCTUATION,
+    LITERAL,
+    COMMENT,
+    WHITESPACE,
+    NEWLINE,
+    END
+};
 
-  ll_insert(data1, &ll);
-  printf("%llu\n", ll_position(data2, &ll->head));
+int classifier(char *c) {
+    switch (*c) {
+        case ' ':
+        case '\t':
+            return WHITESPACE;
+        case '\n':
+            return NEWLINE;
+        case '#':
+            return COMMENT;
+        case '(':
+        case ')':
+        case '[':
+        case ']':
+        case '{':
+        case '}':
+        case ',':
+        case ':':
+        case '.':
+            return PUNCTUATION;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '%':
+        case '&':
+        case '|':
+        case '^':
+        case '~':
+        case '<':
+        case '>':
+        case '=':
+        case '!':
+            return OPERATOR;
+        case '0' ... '9':
+            return LITERAL;
+        default:
+            return IDENTIFIER;
+    
+    }
+}
 
-  printf("Size: %llu\n", dll->size);
-  printf("Size: %llu\n", ll->size);
+int main() { 
+    dll_t *main = dll_create();
+    insert(ll_create(), &main);
+ 
+    // token_data_t token, token1, token2, token3;
+    // strcpy(token.token, "    ");
+    // strcpy(token1.token, "Hello, ");
+    // strcpy(token3.token, "    ");
+    // strcpy(token2.token, "World!");
+
+
+    // ll_insert(token, &main->head->ll);
+    // ll_insert(token1, &main->head->ll);
+    // ll_insert(token3, &main->head->ll);
+    // ll_insert(token2, &main->head->ll);
+
+    ll_show(main->head->ll);
+    
+    //init first linked list for main dll
+    insert(ll_create(), &main);
+     // for (size_t i = 0; i < strlen(text_to_tokenize_1); i++) {
+     //     switch (classifier(&text_to_tokenize_1[i])) {
+     //         case WHITESPACE:
+     //     }
+     // } 
+
 }
