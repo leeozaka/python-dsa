@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define STRSIZE 256
+#define TOKENSIZE 32
+
 enum {
   KEYWORD,
   IDENTIFIER,
@@ -17,7 +20,7 @@ enum {
 };
 
 typedef struct TOKEN_DATA_H {
-  char token[32];
+  char token[TOKENSIZE];
 } token_data_t;
 
 typedef struct STACK_DATA_H {} stack_data_t;

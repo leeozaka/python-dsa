@@ -11,21 +11,18 @@
 int main() {
   int type;
   size_t index = 0;
-  char token_text[36] = "", *line;
+  char token_text[TOKENSIZE] = "", *line;
   token_data_t token;
 
-  line = (char *)calloc(256, sizeof(char));
+  line = (char *)calloc(STRSIZE, sizeof(char));
   dll_t *main = dll_create();
 
   FILE *stream = fopen("test.py", "r");
 
-  while (fgets(line, 256, stream)) {
+  while (fgets(line, STRSIZE, stream)) {
     if (classifier(line) == COMMENT || classifier(line) == NEWLINE) {
       continue;
     }
-    // if (*line == '\n') {
-    //   continue;
-    // }
     dll_node_t *actual = insert(ll_create(), &main);
 
     while (*line) {
