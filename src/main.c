@@ -20,9 +20,12 @@ int main() {
   FILE *stream = fopen("test.py", "r");
 
   while (fgets(line, 256, stream)) {
-    if (line[0] == '\n') {
+    if (classifier(line) == COMMENT || classifier(line) == NEWLINE) {
       continue;
     }
+    // if (*line == '\n') {
+    //   continue;
+    // }
     dll_node_t *actual = insert(ll_create(), &main);
 
     while (*line) {
@@ -39,12 +42,22 @@ int main() {
       }
 
       type = classifier(line);
-      while (type != WHITESPACE && type != PUNCTUATION && type != NEWLINE &&
-             type != COMMENT) {
+      if (type != QUOTE)
+        while (type != WHITESPACE && type != PUNCTUATION && type != NEWLINE) {
+          token_text[index++] = *line;
+          line++;
+
+          type = classifier(line);
+        }
+      else {
         token_text[index++] = *line;
         line++;
-
-        type = classifier(line);
+        while (classifier(line) != QUOTE) {
+          token_text[index++] = *line;
+          line++;
+        }
+        token_text[index++] = *line;
+        line++;
       }
 
       strcpy(token.token, token_text);

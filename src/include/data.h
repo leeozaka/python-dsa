@@ -12,7 +12,8 @@ enum {
   COMMENT,
   WHITESPACE,
   NEWLINE,
-  END
+  END,
+  QUOTE
 };
 
 typedef struct TOKEN_DATA_H {

@@ -34,10 +34,9 @@ int classifier(char *c) {
   case '=':
   case '!':
     return OPERATOR;
-  case '\"':
-    return OPERATOR;
+  case '"':
   case '\'':
-    return OPERATOR;
+    return QUOTE;
   case '0' ... '9':
     return LITERAL;
   default:
