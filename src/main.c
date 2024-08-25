@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +19,7 @@ int main() {
   dll_t *main = dll_create();
 
   FILE *stream = fopen("test.py", "r");
+  assert(stream);
 
   while (fgets(line, STRSIZE, stream)) {
     if (classifier(line) == COMMENT || classifier(line) == NEWLINE) {

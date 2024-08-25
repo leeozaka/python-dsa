@@ -3,6 +3,7 @@
 
 #include "data.h"
 #include "ll.h"
+#include <stdlib.h> 
 
 typedef struct DLL_NODE_ dll_node_t;
 typedef struct DLL dll_t;
@@ -23,12 +24,12 @@ dll_t *dll_create();
 dll_node_t *node_create(ll_t *ll);
 
 dll_node_t *insert(ll_t *ll, dll_t **dll);
-uint8_t insertAt(ll_t *ll, uint64_t index, dll_t **dll);
+uint8_t insertAt(ll_t *ll, size_t index, dll_t **dll);
 uint8_t remove_dll(ll_t *ll, dll_node_t **head);
-uint8_t removeAt(uint64_t index, dll_t **dll);
+uint8_t removeAt(size_t index, dll_t **dll);
 
-ll_t *get(uint64_t index, dll_t *head);
-uint8_t replace(ll_t *ll, uint64_t index, dll_node_t **head);
+ll_t *get(size_t index, dll_t *head);
+uint8_t replace(ll_t *ll, size_t index, dll_node_t **head);
 size_t position(ll_t *ll, dll_node_t **head);
 
 #endif
