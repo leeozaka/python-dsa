@@ -33,6 +33,7 @@ uint8_t peek(stack_node_t **data, stacks_t *stack);
 uint8_t isEmpty(stacks_t *stack);
 size_t stack_size(stacks_t *stack);
 
+int bringval(const char *var, stacks_t *stack);
 void memshow(stacks_t *stack);
 
 #endif
