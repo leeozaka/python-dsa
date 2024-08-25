@@ -3,6 +3,7 @@
 
 #include "data.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct LL_NODE_ ll_node_t;
 
