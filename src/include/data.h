@@ -23,6 +23,4 @@ typedef struct TOKEN_DATA_H {
   char token[TOKENSIZE];
 } token_data_t;
 
-typedef struct STACK_DATA_H {} stack_data_t;
-
 #endif

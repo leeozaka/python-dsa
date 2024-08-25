@@ -3,6 +3,7 @@
 
 #include "../include/stack.h"
 #include <stdint.h>
+#include <string.h>
 
 stacks_t *stack_create() {
   stacks_t *stack = (stacks_t *)malloc(sizeof(stacks_t));
@@ -11,14 +12,20 @@ stacks_t *stack_create() {
   return stack;
 }
 
-stack_node_t *stack_node_create(stack_data_t *data) {
+stack_node_t *stack_node_create(stack_data_t data) {
   stack_node_t *node = (stack_node_t *)malloc(sizeof(stack_node_t));
-  node->data = data;
+  node->data = (stack_data_t *)malloc(sizeof(stack_data_t));
+
+  node->data->value = data.value;
+  node->data->address = data.address;
+  strcpy(node->data->data, data.data);
+
+  // node->data = data;
   node->next = NULL;
   return node;
 }
 
-uint8_t push(stack_data_t *data, stacks_t **stack){
+uint8_t push(stack_data_t data, stacks_t **stack) {
   stack_node_t *node = stack_node_create(data);
   node->next = (*stack)->top;
   (*stack)->top = node;
@@ -50,3 +57,14 @@ uint8_t peek(stack_node_t **data, stacks_t *stack) {
 uint8_t isEmpty(stacks_t *stack) { return stack->size == 0; }
 
 uint64_t stack_size(stacks_t *stack) { return stack->size; }
+
+void memshow(stacks_t *stack) {
+  stack_node_t *node = stack->top;
+  printf("Stack size: %zu\n", stack->size);
+  printf("Data - Value - Address \n");
+  while (node) {
+    printf("%s %d %04x\n", node->data->data, node->data->value,
+           node->data->address);
+    node = node->next;
+  }
+}

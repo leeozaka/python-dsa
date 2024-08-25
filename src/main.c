@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +6,7 @@
 #include "include/data.h"
 #include "include/dll.h"
 #include "include/ll.h"
+#include "include/stack.h"
 #include "include/strctrl.h"
 
 int main() {
@@ -17,6 +17,9 @@ int main() {
 
   line = (char *)calloc(STRSIZE, sizeof(char));
   dll_t *main = dll_create();
+
+  stacks_t *mem = stack_create();
+  stack_data_t stack_data;
 
   FILE *stream = fopen("test.py", "r");
   assert(stream);
@@ -76,9 +79,49 @@ int main() {
       // }
     }
 
-    ll_show(actual->ll);
+    // ll_show(actual->ll);
   }
 
+  // file read loop end
   fclose(stream);
+
+  printf("----hit00000\n");
+
+  for (dll_node_t *node = main->head; node; node = node->next) {
+    ll_show(node->ll);
+  }
+
+  // strcpy(stack_data.data, main->head->ll->head->next->data->token);
+  // stack_data.value = 0;
+  // stack_data.address = main->head;
+  // push(stack_data, &mem);
+
+  // strcpy(stack_data.data, "teste");
+  // stack_data.value = 1;
+  // stack_data.address = NULL;
+  // push(stack_data, &mem);
+
+  // memory loop start
+  for (dll_node_t *node = main->head; node; node = node->next) {
+    if (strcmp(node->ll->head->data->token, "def") == 0) {
+      strcpy(stack_data.data, node->ll->head->next->data->token);
+      stack_data.value = 0;
+      stack_data.address = node;
+      push(stack_data, &mem);
+      continue;
+    }
+    if (strcmp(node->ll->head->data->token, "") == 0) {
+      continue;
+    }
+    if (strcmp(node->ll->head->data->token, "") != 0) {
+      strcpy(stack_data.data, node->ll->head->data->token);
+      stack_data.value = atoi(node->ll->head->next->next->data->token);
+      stack_data.address = NULL;
+      push(stack_data, &mem);
+    }
+  }
+
+  memshow(mem);
+
   return 0;
 }
