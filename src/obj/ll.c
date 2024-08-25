@@ -67,10 +67,11 @@ size_t ll_position(token_data_t data, ll_node_t **head) {
 }
 
 void ll_show(ll_t *ll) {
-    ll_node_t *current = ll->head;
-    while (current != NULL) {
-        printf("%s %s ", current->data->token, current->next? "->" : " ");
-        current = current->next;
-    }
-    printf("\n");
+  ll_node_t *current = ll->head;
+  printf("[ ]: ");
+  while (current != NULL) {
+    printf("%s %s ", current->data->token, current->next ? "->" : " ");
+    current = current->next;
+  }
+  printf("\n");
 }
