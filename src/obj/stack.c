@@ -36,17 +36,17 @@ uint8_t exists(stack_data_t data, stacks_t *stack) {
   return 0;
 }
 
-int bringval(const char * var, stacks_t *stack) {
+int* bringval(const char * var, stacks_t *stack) {
   stack_node_t *node = stack->top;
   while (node) {
     if (strcmp(node->data->data, var) == 0) {
-      return node->data->value;
+      return &node->data->value;
     }
     node = node->next;
   }
-  printf("variable not found %s\n", var);
-  exit(69);
-  return 0;
+  // printf("variable not found %s\n", var);
+  // exit(69);
+  return NULL;
 }
 
 uint8_t push(stack_data_t data, stacks_t **stack) {

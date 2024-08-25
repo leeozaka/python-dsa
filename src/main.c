@@ -103,7 +103,7 @@ int main() {
       ll_node_t *printnode = node->ll->head->next;
       char *printstr = node->ll->head->next->data->token;
       char *printc;
-      int i = 0;
+      // int i = 0;
 
       while (strcmp(printnode->data->token, "%") != 0) {
         if (!printnode) {
@@ -131,15 +131,16 @@ int main() {
           printc++;
         switch (*printc) {
         case 'd':
-          i = bringval(printnode->data->token, mem);
-          fprintf(stdout, "%d", i);
+          int *i = bringval(printnode->data->token, mem);
+
+          fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));    
           printc++;
           printnode = printnode->next;
           break;
         case 'n':
           fprintf(stdout, "\n");
           printc++;
- 
+
           // ainda nao guardo strings em variaveis
         case 's':
           break;
