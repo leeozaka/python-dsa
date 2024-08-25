@@ -35,12 +35,12 @@ int main() {
         continue;
       }
 
-      if (isspace(*line)) {
+      type = classifier(line);
+      if (type == WHITESPACE || type == PUNCTUATION) {
         line++;
         continue;
       }
 
-      type = classifier(line);
       if (type != QUOTE)
         while (type != WHITESPACE && type != PUNCTUATION && type != NEWLINE) {
           token_text[index++] = *line;
@@ -66,10 +66,14 @@ int main() {
       memset(token_text, 0, sizeof(token_text));
       index = 0;
 
-      if (*(line + 1) == '\n') {
-        break;
+      if (*(line + 1) != '\n') {
+        line++;
       }
-      line++;
+
+      // type = classifier(line + 1);
+      // if (type != NEWLINE) {
+      //   line++;
+      // }
     }
 
     ll_show(actual->ll);
