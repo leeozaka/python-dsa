@@ -100,54 +100,70 @@ int main() {
   // memory loop start
   for (dll_node_t *node = main->head; node; node = node->next) {
     if (strcmp(node->ll->head->data->token, "print") == 0) {
-      ll_node_t *printnode = node->ll->head->next;
-      char *printstr = node->ll->head->next->data->token;
-      char *printc;
-      // int i = 0;
+    // there's a segfault when passing just a variable to the function
+      if (node->ll->head->next->data->token[0] == '"') {
+        ll_node_t *printnode = node->ll->head->next;
+        char *printstr = node->ll->head->next->data->token;
+        char *printc;
+        // int i = 0;
 
-      while (strcmp(printnode->data->token, "%") != 0) {
-        if (!printnode) {
+        while (strcmp(printnode->data->token, "%") != 0) {
+          if (!printnode) {
+            perror("invalid print statement");
+            exit(69);
+          }
+
+          printnode = printnode->next;
+        }
+
+        if (printnode->next)
+          printnode = printnode->next;
+        else {
           perror("invalid print statement");
           exit(69);
         }
 
-        printnode = printnode->next;
-      }
+        int *i = NULL;
 
-      if (printnode->next)
-        printnode = printnode->next;
-      else {
-        perror("invalid print statement");
-        exit(69);
-      }
+        for (printc = (char *)printstr; *printc != '\0';) {
+          while (*printc != '%' && *printc != '\0' && *printc != '"' &&
+                 *printc != '\\') {
+            putchar(*printc);
+            printc++;
+          }
+          if (*printc == '%' || *printc == '"' || *printc == '\\')
+            printc++;
+          switch (*printc) {
+          case 'd':
+            i = bringval(printnode->data->token, mem);
 
-    int *i = NULL;
+            fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
+            printc++;
+            printnode = printnode->next;
+            break;
+          case 'n':
+            fprintf(stdout, "\n");
+            printc++;
 
-      for (printc = (char *)printstr; *printc != '\0';) {
-        while (*printc != '%' && *printc != '\0' && *printc != '"' &&
-               *printc != '\\') {
-          putchar(*printc);
-          printc++;
+            // ainda nao guardo strings em variaveis
+          case 's':
+            break;
+          }
         }
-        if (*printc == '%' || *printc == '"' || *printc == '\\')
-          printc++;
-        switch (*printc) {
-        case 'd':
-          i = bringval(printnode->data->token, mem);
-
-          fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));    
-          printc++;
-          printnode = printnode->next;
-          break;
-        case 'n':
-          fprintf(stdout, "\n");
-          printc++;
-
-          // ainda nao guardo strings em variaveis
-        case 's':
-          break;
-        }
+      } else {
+          //i think this resolves segfault problems
+          //should get the name of variable and find it in the memory
+        while (strcmp(node->ll->head->next->data->token, "") != 0) {
+            int *i = bringval(node->ll->head->next->data->token, mem);
+            if (i) {
+              fprintf(stdout, "%d ", *i);
+            } else {
+              fprintf(stdout, "%s", node->ll->head->next->data->token);
+            }
+          node->ll->head->next = node->ll->head->next->next;
+        } 
       }
+    
 
       continue;
     }
