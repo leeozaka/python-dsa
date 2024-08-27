@@ -100,31 +100,34 @@ int main() {
   // memory loop start
   for (dll_node_t *node = main->head; node; node = node->next) {
     if (strcmp(node->ll->head->data->token, "print") == 0) {
-    // there's a segfault when passing just a variable to the function
       if (*node->ll->head->next->data->token == '"') {
+
         ll_node_t *printnode = node->ll->head->next;
         char *printstr = node->ll->head->next->data->token;
         char *printc;
         // int i = 0;
 
-        while (strcmp(printnode->data->token, "%") != 0) {
+        uint8_t percent = 0, empty = 0;
+
+        percent = *printnode->data->token == '%';
+        empty = *printnode->data->token == '\0';
+
+        while (printnode && !percent && !empty) {
           if (!printnode) {
-            perror("invalid print statement");
+            perror("invalid print statement 1");
             exit(69);
           }
 
           printnode = printnode->next;
+          percent = *printnode->data->token == '%';
+          empty = *printnode->data->token == '\0';
         }
 
-        if (printnode->next)
-          printnode = printnode->next;
-        else {
-          perror("invalid print statement");
-          exit(69);
-        }
-
+        printnode = printnode->next;
+        
         int *i = NULL;
 
+        // printf("printstr: %s\n", printstr);
         for (printc = (char *)printstr; *printc != '\0';) {
           while (*printc != '%' && *printc != '\0' && *printc != '"' &&
                  *printc != '\\') {
@@ -151,17 +154,17 @@ int main() {
           }
         }
       } else {
-          //i think this resolves segfault problems
-          //should get the name of variable and find it in the memory
+        // i think this resolves segfault problems
+        // should get the name of variable and find it in the memory
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
-            int *i = bringval(node->ll->head->next->data->token, mem);
-            if (i) {
-              fprintf(stdout, "%d ", *i);
-            } else {
-              fprintf(stdout, "%s", node->ll->head->next->data->token);
-            }
+          int *i = bringval(node->ll->head->next->data->token, mem);
+          if (i) {
+            fprintf(stdout, "%d ", *i);
+          } else {
+            fprintf(stdout, "%s", node->ll->head->next->data->token);
+          }
           node->ll->head->next = node->ll->head->next->next;
-        } 
+        }
         printf("\n");
       }
       continue;
