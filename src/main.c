@@ -93,15 +93,15 @@ int main() {
   // file read loop end
   fclose(stream);
 
-  // for (dll_node_t *node = main->head; node; node = node->next) {
-  //   ll_show(node->ll);
-  // }
+  for (dll_node_t *node = main->head; node; node = node->next) {
+    ll_show(node->ll);
+  }
 
   // memory loop start
   for (dll_node_t *node = main->head; node; node = node->next) {
     if (strcmp(node->ll->head->data->token, "print") == 0) {
     // there's a segfault when passing just a variable to the function
-      if (node->ll->head->next->data->token[0] == '"') {
+      if (*node->ll->head->next->data->token == '"') {
         ll_node_t *printnode = node->ll->head->next;
         char *printstr = node->ll->head->next->data->token;
         char *printc;
@@ -162,9 +162,8 @@ int main() {
             }
           node->ll->head->next = node->ll->head->next->next;
         } 
+        printf("\n");
       }
-    
-
       continue;
     }
 
