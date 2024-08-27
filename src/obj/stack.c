@@ -83,7 +83,7 @@ uint8_t peek(stack_node_t **data, stacks_t *stack) {
 
 uint8_t isEmpty(stacks_t *stack) { return stack->size == 0; }
 
-uint64_t stack_size(stacks_t *stack) { return stack->size; }
+size_t stack_size(stacks_t *stack) { return stack->size; }
 
 void memshow(stacks_t *stack) {
   stack_node_t *node = stack->top;

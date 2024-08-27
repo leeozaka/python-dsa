@@ -121,6 +121,8 @@ int main() {
         exit(69);
       }
 
+    int *i = NULL;
+
       for (printc = (char *)printstr; *printc != '\0';) {
         while (*printc != '%' && *printc != '\0' && *printc != '"' &&
                *printc != '\\') {
@@ -131,7 +133,7 @@ int main() {
           printc++;
         switch (*printc) {
         case 'd':
-          int *i = bringval(printnode->data->token, mem);
+          i = bringval(printnode->data->token, mem);
 
           fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));    
           printc++;
