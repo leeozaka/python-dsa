@@ -92,7 +92,7 @@ void memshow(stacks_t *stack) {
   printf("Stack size: %zu\n", stack->size);
   printf("Data - Value - Address \n");
   while (node) {
-    printf("%s %d %04x\n", node->data->data, node->data->value,
+    printf("%s %d %x\n", node->data->data, node->data->value,
            node->data->address);
     node = node->next;
   }

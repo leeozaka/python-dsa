@@ -176,5 +176,5 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
     // }
   }
 
-  memshow(function_mem);
+  // memshow(function_mem);
 }
