@@ -192,7 +192,37 @@ int main() {
                  stack_data.data);
           exit(69);
         }
-        printf("function %s found\n", stack_data.data);
+        // function found: stack actual node and go to function
+        // stack_data.data = '\0';
+        // memset(stack_data.data, 0, sizeof(stack_data.data));
+        strcpy(stack_data.data, "FCALL");
+        stack_data.value = 0;
+        stack_data.address = node;
+        // certify everything right
+        // if not right here, we gonna lose the address of the return
+        assert(push(stack_data, &mem));
+        // let's push the args to the stack
+
+        ll_node_t *callarg = node->ll->head->next;
+
+        for (ll_node_t *arg = function->ll->head->next->next;
+             strcmp(arg->data->token, "") != 0; arg = arg->next) {
+          stack_data_t arg_data;
+
+          strcpy(arg_data.data, arg->data->token);
+
+          arg_data.value = bringval(callarg->data->token, mem)
+                               ? *bringval(callarg->data->token, mem)
+                               : atoi(callarg->data->token);
+          //atoi up here is a temporary solution
+          // we need to check if the argument is a variable or a value
+
+          arg_data.address = NULL;
+          push(arg_data, &mem);
+
+          // we need to fetch every argument from the call
+          assert(callarg = callarg->next);
+        }
       }
       continue;
     }
