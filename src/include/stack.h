@@ -5,9 +5,9 @@
 #include "dll.h"
 
 typedef struct STACK_DATA_H {
-    char data[TOKENSIZE];
-    int value;
-    dll_node_t *address;
+  char data[TOKENSIZE];
+  int value;
+  dll_node_t *address;
 } stack_data_t;
 
 typedef struct STACK_NODE_ stack_node_t;
@@ -33,7 +33,7 @@ uint8_t peek(stack_node_t **data, stacks_t *stack);
 uint8_t isEmpty(stacks_t *stack);
 size_t stack_size(stacks_t *stack);
 
-int* bringval(const char *var, stacks_t *stack);
+int *bringval(const char *var, stacks_t *stack, int depth);
 void memshow(stacks_t *stack);
 uint8_t exists(stack_data_t data, stacks_t *stack);
 

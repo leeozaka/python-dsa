@@ -5,9 +5,12 @@
 
 #include "include/data.h"
 #include "include/dll.h"
+#include "include/function.h"
 #include "include/ll.h"
 #include "include/stack.h"
 #include "include/strctrl.h"
+
+#define NO_DEPTH 0
 
 char *conv(unsigned int numero, int base) {
   static char Rep[] = "0123456789ABCDEF";
@@ -93,9 +96,9 @@ int main() {
   // file read loop end
   fclose(stream);
 
-  for (dll_node_t *node = main->head; node; node = node->next) {
-    ll_show(node->ll);
-  }
+  // for (dll_node_t *node = main->head; node; node = node->next) {
+  //   ll_show(node->ll);
+  // }
 
   // memory loop start
   for (dll_node_t *node = main->head; node; node = node->next) {
@@ -138,7 +141,7 @@ int main() {
             printc++;
           switch (*printc) {
           case 'd':
-            i = bringval(printnode->data->token, mem);
+            i = bringval(printnode->data->token, mem, NO_DEPTH);
 
             fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
             printc++;
@@ -157,7 +160,7 @@ int main() {
         // i think this resolves segfault problems
         // should get the name of variable and find it in the memory
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
-          int *i = bringval(node->ll->head->next->data->token, mem);
+          int *i = bringval(node->ll->head->next->data->token, mem, NO_DEPTH);
           if (i) {
             fprintf(stdout, "%d ", *i);
           } else {
@@ -205,14 +208,17 @@ int main() {
 
         ll_node_t *callarg = node->ll->head->next;
 
+        //stack every argument
         for (ll_node_t *arg = function->ll->head->next->next;
              strcmp(arg->data->token, "") != 0; arg = arg->next) {
           stack_data_t arg_data;
 
           strcpy(arg_data.data, arg->data->token);
 
-          arg_data.value = bringval(callarg->data->token, mem)
-                               ? *bringval(callarg->data->token, mem)
+          //if the argument is a variable, we need to fetch its value
+          //if it is a value, we need to convert it to int
+          arg_data.value = bringval(callarg->data->token, mem, 5)
+                               ? *bringval(callarg->data->token, mem, 5)
                                : atoi(callarg->data->token);
           //atoi up here is a temporary solution
           // we need to check if the argument is a variable or a value
@@ -223,12 +229,16 @@ int main() {
           // we need to fetch every argument from the call
           assert(callarg = callarg->next);
         }
+
+        //at this point we have stacked every argument
+        function_handler(function, mem, NO_DEPTH);
+        
       }
       continue;
     }
   }
 
-  memshow(mem);
+  // memshow(mem);
 
   return 0;
 }
