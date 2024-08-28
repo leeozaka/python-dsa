@@ -124,7 +124,7 @@ int main() {
         }
 
         printnode = printnode->next;
-        
+
         int *i = NULL;
 
         // printf("printstr: %s\n", printstr);
@@ -171,10 +171,6 @@ int main() {
     }
 
     if (strcmp(node->ll->head->data->token, "def") == 0) {
-      strcpy(stack_data.data, node->ll->head->next->data->token);
-      stack_data.value = 0;
-      stack_data.address = node;
-      push(stack_data, &mem);
       continue;
     }
     if (strcmp(node->ll->head->data->token, "") == 0) {
@@ -182,10 +178,20 @@ int main() {
     }
     if (strcmp(node->ll->head->data->token, "") != 0) {
       strcpy(stack_data.data, node->ll->head->data->token);
-      stack_data.value = atoi(node->ll->head->next->next->data->token);
-      stack_data.address = NULL;
-      if (!push(stack_data, &mem)) {
-        printf("attempt to redeclare variable %s\n", stack_data.data);
+      if (*node->ll->head->next->data->token == '=') {
+        stack_data.value = atoi(node->ll->head->next->next->data->token);
+        stack_data.address = NULL;
+
+        if (!push(stack_data, &mem)) {
+          printf("attempt to redeclare variable %s\n", stack_data.data);
+        }
+      } else {
+        dll_node_t *function = findFunction(stack_data.data, main);
+        if (!function) {
+          printf("attempt to call function %s, which does not exist\n",
+                 stack_data.data);
+          exit(69);
+        }
       }
       continue;
     }

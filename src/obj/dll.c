@@ -1,5 +1,6 @@
 #include "../include/dll.h"
 #include <stdlib.h>
+#include <string.h>
 
 dll_t *dll_create() {
   dll_t *new = calloc(1, sizeof(dll_t));
@@ -32,7 +33,7 @@ ll_t *get(size_t index, dll_t *dll) {
   return current->ll;
 }
 
-dll_node_t* insert(ll_t *ll, dll_t **dll) {
+dll_node_t *insert(ll_t *ll, dll_t **dll) {
   dll_node_t *new = node_create(ll);
 
   new->next = NULL;
@@ -165,4 +166,18 @@ size_t position(ll_t *ll, dll_node_t **head) {
   }
 
   return -1;
+}
+
+dll_node_t *findFunction(const char *name, dll_t *dll) {
+  dll_node_t *current = dll->head;
+  while (current != NULL) {
+    if (strcmp(current->ll->head->data->token, "def") == 0) {
+        if (strcmp(current->ll->head->next->data->token, name) == 0) {
+        return current;
+      }
+    }
+    current = current->next;
+  }
+
+  return NULL;
 }

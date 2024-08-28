@@ -32,4 +32,6 @@ ll_t *get(size_t index, dll_t *head);
 uint8_t replace(ll_t *ll, size_t index, dll_node_t **head);
 size_t position(ll_t *ll, dll_node_t **head);
 
+dll_node_t *findFunction(const char *name, dll_t *head);
+
 #endif
