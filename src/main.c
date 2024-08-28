@@ -192,6 +192,7 @@ int main() {
                  stack_data.data);
           exit(69);
         }
+        printf("function %s found\n", stack_data.data);
       }
       continue;
     }
