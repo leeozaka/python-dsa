@@ -216,8 +216,6 @@ int main() {
           }
           *d = '\0';
 
-          printf("dest: %s\n", dest);
-
           stack_data.value->identity = V_STRING;
           strcpy(stack_data.value->v.str, dest);
         } else {
@@ -277,11 +275,13 @@ int main() {
         // memshow(mem);
 
         // at this point we have stacked every argument
-        function_handler(function, mem, NO_DEPTH);
+        function_handler(function, &mem, NO_DEPTH);
+        pop(&mem);
       }
 
       continue;
     }
   }
+  memshow(mem);
   return 0;
 }

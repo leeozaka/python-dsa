@@ -1,12 +1,12 @@
 #include "../include/function.h"
-#include "../include/print.h"
+// #include "../include/print.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
 #define NO_DEPTH 0
 
-void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
+void function_handler(dll_node_t *function, stacks_t **mem, int depth) {
   dll_t *body = dll_create();
   dll_node_t *exec = function->next;
 
@@ -25,7 +25,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
     exec = exec->next;
   }
 
-  stack_node_t *stack_node = mem->top;
+  stack_node_t *stack_node = (*mem)->top;
   int _depth = depth + 1;
 
   // here we are scoping the function memory
@@ -82,7 +82,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
             printc++;
           switch (*printc) {
           case 'd':
-            val = bringval(printnode->data->token, mem, NO_DEPTH);
+            val = bringval(printnode->data->token, *mem, NO_DEPTH);
 
             if (val->identity == V_INT) {
               fprintf(stdout, "%d", val->v.i);
@@ -101,7 +101,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
             break;
 
           case 's':
-            val = bringval(printnode->data->token, mem, NO_DEPTH);
+            val = bringval(printnode->data->token, *mem, NO_DEPTH);
 
             if (val->identity == V_STRING) {
               fprintf(stdout, "%s", val->v.str);
@@ -115,7 +115,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
         // i think this resolves segfault problems
         // should get the name of variable and find it in the memory
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
-          val = bringval(node->ll->head->next->data->token, mem, NO_DEPTH);
+          val = bringval(node->ll->head->next->data->token, *mem, NO_DEPTH);
           if (val) {
             fprintf(stdout, "%d ", val->v.i);
           } else {
@@ -167,7 +167,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
 
         stack_data.address = NULL;
 
-        if (!push(stack_data, &mem)) {
+        if (!push(stack_data, mem)) {
           printf("attempt to redeclare variable %s\n", stack_data.data);
         }
       }
@@ -190,7 +190,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
         stack_data.address = node;
         // certify everything right
         // if not right here, we gonna lose the address of the return
-        assert(push(stack_data, &mem));
+        assert(push(stack_data, mem));
         // let's push the args to the stack
 
         ll_node_t *callarg = node->ll->head->next;
@@ -205,14 +205,14 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
           // if the argument is a variable, we need to fetch its value
           // if it is a value, we need to convert it to int
 
-          arg_data.value = bringval(callarg->data->token, mem, NO_DEPTH);
+          arg_data.value = bringval(callarg->data->token, *mem, NO_DEPTH);
 
           // arg_data = bringval(callarg->data->token, mem, 5)
           //                      ? *bringval(callarg->data->token, mem, 5)
           //                      : atoi(callarg->data->token);
 
           arg_data.address = NULL;
-          push(arg_data, &mem);
+          push(arg_data, mem);
 
           // we need to fetch every argument from the call
           assert(callarg = callarg->next);
@@ -225,6 +225,5 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
       continue;
     }
   }
-
-  memshow(function_mem);
+  clear_stack(mem);
 }

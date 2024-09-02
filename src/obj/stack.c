@@ -42,6 +42,7 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 
   while (node) {
     if (strcmp(node->data->data, var) == 0) {
+        depth++;
       return node->data->value;
     }
     // if (strcmp(node->data->data, "FCALL") == 0) {
@@ -103,4 +104,13 @@ void memshow(stacks_t *stack) {
     }
     node = node->next;
   }
+}
+
+void clear_stack(stacks_t **stack) {
+    if ((*stack)->size == 0) {
+        return;
+    }
+    while (strcmp((*stack)->top->data->data, "FCALL") != 0) {
+        pop(stack);
+    }
 }
