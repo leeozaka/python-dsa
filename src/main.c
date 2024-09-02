@@ -200,7 +200,6 @@ int main() {
       strcpy(stack_data.data, node->ll->head->data->token);
       if (*node->ll->head->next->data->token == '=') {
         if (*node->ll->head->next->next->data->token == '"') {
-
           char *str = (char *)malloc(
               sizeof(char) * strlen(node->ll->head->next->next->data->token));
 

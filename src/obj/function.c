@@ -140,14 +140,29 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
       strcpy(stack_data.data, node->ll->head->data->token);
       if (*node->ll->head->next->data->token == '=') {
         if (*node->ll->head->next->next->data->token == '"') {
+          char *str = (char *)malloc(
+              sizeof(char) * strlen(node->ll->head->next->next->data->token));
+
+          strcpy(str, node->ll->head->next->next->data->token);
+
+          char *dest = (char *)malloc(strlen(str) + 1);
+
+          char *d = dest;
+          while (*str != '\0') {
+            if (*str != '\"') {
+              *d++ = *str;
+            }
+            str++;
+          }
+          *d = '\0';
+
+          printf("dest: %s\n", dest);
+
           stack_data.value->identity = V_STRING;
-          strcpy(stack_data.value->v.str,
-                 node->ll->head->next->next->data->token);
-          stack_data.address = NULL;
+          strcpy(stack_data.value->v.str, dest);
         } else {
           stack_data.value->identity = V_INT;
-          stack_data.value->v.i =
-              atoi(node->ll->head->next->next->data->token);
+          stack_data.value->v.i = atoi(node->ll->head->next->next->data->token);
         }
 
         stack_data.address = NULL;
@@ -204,7 +219,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
         }
 
         // at this point we have stacked every argument
-        function_handler(function, mem, NO_DEPTH+1);
+        function_handler(function, mem, NO_DEPTH + 1);
       }
 
       continue;
