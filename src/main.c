@@ -145,10 +145,10 @@ int main() {
           case 'd':
             val = bringval(printnode->data->token, mem, NO_DEPTH);
 
-            if (val->identity == V_INT) {
+            if (val) {
               fprintf(stdout, "%d", val->v.i);
             } else {
-              fprintf(stdout, "%d", atoi(printnode->data->token));
+              fprintf(stdout, "%s", printnode->data->token);
             }
 
             // fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
@@ -178,7 +178,19 @@ int main() {
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
           val = bringval(node->ll->head->next->data->token, mem, NO_DEPTH);
           if (val) {
-            fprintf(stdout, "%d ", val->v.i);
+            // if (val->identity == V_STRING) {
+            //   fprintf(stdout, "%s", val->v.str);
+            // } else {
+            //   fprintf(stdout, "%d ", val->v.i);
+            // }
+            switch (val->identity) {
+            case V_INT:
+              fprintf(stdout, "%d ", val->v.i);
+              break;
+            case V_STRING:
+              fprintf(stdout, "%s", val->v.str);
+              break;
+            }
           } else {
             fprintf(stdout, "%s", node->ll->head->next->data->token);
           }
@@ -282,6 +294,6 @@ int main() {
       continue;
     }
   }
-  memshow(mem);
+  // memshow(mem);
   return 0;
 }
