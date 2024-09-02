@@ -13,6 +13,8 @@
 
 #define NO_DEPTH 0
 
+int debug = 0;
+
 char *conv(unsigned int numero, int base) {
   static char Rep[] = "0123456789ABCDEF";
   static char buffer[50];
@@ -101,9 +103,15 @@ int main() {
   // file read loop end
   fclose(stream);
 
-  // for (dll_node_t *node = main->head; node; node = node->next) {
-  //   ll_show(node->ll);
-  // }
+  if (debug) {
+
+    for (dll_node_t *node = main->head; node; node = node->next) {
+      ll_show(node->ll);
+    }
+
+    printf("\n execution stage \n\n");
+
+  }
 
   // memory loop start
   for (dll_node_t *node = main->head; node; node = node->next) {
@@ -145,13 +153,25 @@ int main() {
           case 'd':
             val = bringval(printnode->data->token, mem, NO_DEPTH);
 
-            if (val) {
-              fprintf(stdout, "%d", val->v.i);
-            } else {
-              fprintf(stdout, "%s", printnode->data->token);
+            if (debug) {
+                printf("expected: %s -> ", printnode->data->token);
+                printf("val: %d\n", val->v.i); 
             }
 
-            // fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
+            if (val) {
+                switch (val->identity) {
+                case V_INT:
+                  if (!debug)
+                    fprintf(stdout, "%d", val->v.i);
+                  break;
+                default:
+                  if (!debug)
+                    fprintf(stdout, "invalid type\n");
+                  break;
+                }
+                
+            }
+
             printc++;
             printnode = printnode->next;
             break;
@@ -164,11 +184,27 @@ int main() {
           case 's':
             val = bringval(printnode->data->token, mem, NO_DEPTH);
 
-            if (val->identity == V_STRING) {
-              fprintf(stdout, "%s", val->v.str);
-            } else {
-              fprintf(stdout, "%s", printnode->data->token);
+            if (debug) {
+                printf("expected: %s -> ", printnode->data->token);
+                printf("val: %s\n", val->v.str); 
             }
+
+
+            if (val) {
+                switch (val->identity) {
+                case V_INT:
+                  if (!debug)
+                    fprintf(stdout, "%d", val->v.i);
+                  break;
+                case V_STRING:
+                  if (!debug)
+                    fprintf(stdout, "%s", val->v.str);
+                  break;
+                }
+            }
+
+            printc++;
+            printnode = printnode->next;
             break;
           }
         }
@@ -294,6 +330,10 @@ int main() {
       continue;
     }
   }
-  // memshow(mem);
+
+  if (debug) {
+    printf("\n\n memory dump \n\n");
+    memshow(mem);
+  }
   return 0;
 }

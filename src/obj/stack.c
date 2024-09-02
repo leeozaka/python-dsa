@@ -42,7 +42,7 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 
   while (node) {
     if (strcmp(node->data->data, var) == 0) {
-        depth++;
+      // depth++;
       return node->data->value;
     }
     // if (strcmp(node->data->data, "FCALL") == 0) {
@@ -54,9 +54,9 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 }
 
 uint8_t push(stack_data_t data, stacks_t **stack) {
-  // if (exists(data, *stack)) {
-  //   return 0;
-  // }
+  if (exists(data, *stack)) {
+    printf("Variable %s already exists\n", data.data);
+  }
 
   stack_node_t *node = stack_node_create(data);
   node->next = (*stack)->top;
@@ -93,13 +93,14 @@ size_t stack_size(stacks_t *stack) { return stack->size; }
 void memshow(stacks_t *stack) {
   stack_node_t *node = stack->top;
   printf("Stack size: %zu\n", stack->size);
-  printf("Data - Value - Address \n");
+  printf("Data - Type - Value - Address \n");
+
   while (node) {
     if (node->data->value->identity == V_INT) {
-      printf("%s %d %p\n", node->data->data, node->data->value->v.i,
+      printf("%s %s %d %p\n", node->data->data, "INT", node->data->value->v.i,
              node->data->address);
     } else if (node->data->value->identity == V_STRING) {
-      printf("%s %s %p\n", node->data->data, node->data->value->v.str,
+      printf("%s %s %s %p\n", node->data->data, "STR", node->data->value->v.str,
              node->data->address);
     }
     node = node->next;
@@ -107,10 +108,10 @@ void memshow(stacks_t *stack) {
 }
 
 void clear_stack(stacks_t **stack) {
-    if ((*stack)->size == 0) {
-        return;
-    }
-    while (strcmp((*stack)->top->data->data, "FCALL") != 0) {
-        pop(stack);
-    }
+  if ((*stack)->size == 0) {
+    return;
+  }
+  while (strcmp((*stack)->top->data->data, "FCALL") != 0) {
+    pop(stack);
+  }
 }
