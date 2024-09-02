@@ -1,5 +1,5 @@
 #include "../include/print.h"
-#include "../include/dll.h"
+// #include "../include/dll.h"
 #include "../include/stack.h"
 #include "../include/ll.h"
 
@@ -30,7 +30,8 @@ void print(ll_t *list, stacks_t *mem) {
 
   printnode = printnode->next;
 
-  int *i = NULL;
+  // int *i = NULL;
+  value_t *val = new_value();
 
   // printf("printstr: %s\n", printstr);
   for (printc = (char *)printstr; *printc != '\0';) {
@@ -43,12 +44,18 @@ void print(ll_t *list, stacks_t *mem) {
       printc++;
     switch (*printc) {
     case 'd':
-      i = bringval(printnode->data->token, mem, 0);
+      val = bringval(printnode->data->token, mem, 0);
 
-      fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
-      printc++;
-      printnode = printnode->next;
-      break;
+            if (val->identity == V_INT) {
+              fprintf(stdout, "%d", val->v.i);
+            } else {
+              fprintf(stdout, "%d", atoi(printnode->data->token));
+            }
+
+            // fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
+            printc++;
+            printnode = printnode->next;
+            break;
     case 'n':
       fprintf(stdout, "\n");
       printc++;

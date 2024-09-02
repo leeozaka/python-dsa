@@ -3,10 +3,12 @@
 
 #include "data.h"
 #include "dll.h"
+#include "value.h"
 
 typedef struct STACK_DATA_H {
   char data[TOKENSIZE];
-  int value;
+  // int value;
+  value_t *value;
   dll_node_t *address;
 } stack_data_t;
 
@@ -33,7 +35,7 @@ uint8_t peek(stack_node_t **data, stacks_t *stack);
 uint8_t isEmpty(stacks_t *stack);
 size_t stack_size(stacks_t *stack);
 
-int *bringval(const char *var, stacks_t *stack, int depth);
+value_t *bringval(const char *var, stacks_t *stack, int depth);
 void memshow(stacks_t *stack);
 uint8_t exists(stack_data_t data, stacks_t *stack);
 

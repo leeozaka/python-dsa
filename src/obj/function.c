@@ -1,5 +1,5 @@
 #include "../include/function.h"
-// #include "../include/print.h"
+#include "../include/print.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -12,6 +12,10 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
 
   stacks_t *function_mem = stack_create();
 
+  stack_data_t stack_data;
+  stack_data.value = new_value();
+
+  value_t *val = new_value();
   while (strcmp(exec->ll->head->data->token, "") == 0) {
     ll_t *ll = exec->ll;
     for (int i = depth + 1; i > 0; i--) {
@@ -23,7 +27,6 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
 
   stack_node_t *stack_node = mem->top;
   int _depth = depth + 1;
-
 
   // here we are scoping the function memory
   if (strcmp(stack_node->data->data, "FCALL") == 0) {
@@ -66,7 +69,7 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
 
         printnode = printnode->next;
 
-        int *i = NULL;
+        // int *i = NULL;
 
         // printf("printstr: %s\n", printstr);
         for (printc = (char *)printstr; *printc != '\0';) {
@@ -79,9 +82,15 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
             printc++;
           switch (*printc) {
           case 'd':
-            i = bringval(printnode->data->token, function_mem, depth);
+            val = bringval(printnode->data->token, mem, NO_DEPTH);
 
-            fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
+            if (val->identity == V_INT) {
+              fprintf(stdout, "%d", val->v.i);
+            } else {
+              fprintf(stdout, "%d", atoi(printnode->data->token));
+            }
+
+            // fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
             printc++;
             printnode = printnode->next;
             break;
@@ -89,8 +98,16 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
             fprintf(stdout, "\n");
             printc++;
 
-            // ainda nao guardo strings em variaveis
+            break;
+
           case 's':
+            val = bringval(printnode->data->token, mem, NO_DEPTH);
+
+            if (val->identity == V_STRING) {
+              fprintf(stdout, "%s", val->v.str);
+            } else {
+              fprintf(stdout, "%s", printnode->data->token);
+            }
             break;
           }
         }
@@ -98,9 +115,9 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
         // i think this resolves segfault problems
         // should get the name of variable and find it in the memory
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
-          int *i = bringval(node->ll->head->next->data->token, function_mem, depth);
-          if (i) {
-            fprintf(stdout, "%d ", *i);
+          val = bringval(node->ll->head->next->data->token, mem, NO_DEPTH);
+          if (val) {
+            fprintf(stdout, "%d ", val->v.i);
           } else {
             fprintf(stdout, "%s", node->ll->head->next->data->token);
           }
@@ -117,64 +134,82 @@ void function_handler(dll_node_t *function, stacks_t *mem, int depth) {
     if (strcmp(node->ll->head->data->token, "") == 0) {
       continue;
     }
-    // if (strcmp(node->ll->head->data->token, "") != 0) {
-    //   strcpy(stack_data.data, node->ll->head->data->token);
-    //   if (*node->ll->head->next->data->token == '=') {
-    //     stack_data.value = atoi(node->ll->head->next->next->data->token);
-    //     stack_data.address = NULL;
-    //
-    //     if (!push(stack_data, &mem)) {
-    //       printf("attempt to redeclare variable %s\n", stack_data.data);
-    //     }
-    //   } else {
-    //     dll_node_t *function = findFunction(stack_data.data, main);
-    //     if (!function) {
-    //       printf("attempt to call function %s, which does not exist\n",
-    //              stack_data.data);
-    //       exit(69);
-    //     }
-    //     // function found: stack actual node and go to function
-    //     // stack_data.data = '\0';
-    //     // memset(stack_data.data, 0, sizeof(stack_data.data));
-    //     strcpy(stack_data.data, "FCALL");
-    //     stack_data.value = 0;
-    //     stack_data.address = node;
-    //     // certify everything right
-    //     // if not right here, we gonna lose the address of the return
-    //     assert(push(stack_data, &mem));
-    //     // let's push the args to the stack
-    //
-    //     ll_node_t *callarg = node->ll->head->next;
-    //
-    //     //stack every argument
-    //     for (ll_node_t *arg = function->ll->head->next->next;
-    //          strcmp(arg->data->token, "") != 0; arg = arg->next) {
-    //       stack_data_t arg_data;
-    //
-    //       strcpy(arg_data.data, arg->data->token);
-    //
-    //       //if the argument is a variable, we need to fetch its value
-    //       //if it is a value, we need to convert it to int
-    //       arg_data.value = bringval(callarg->data->token, mem)
-    //                            ? *bringval(callarg->data->token, mem)
-    //                            : atoi(callarg->data->token);
-    //       //atoi up here is a temporary solution
-    //       // we need to check if the argument is a variable or a value
-    //
-    //       arg_data.address = NULL;
-    //       push(arg_data, &mem);
-    //
-    //       // we need to fetch every argument from the call
-    //       assert(callarg = callarg->next);
-    //     }
-    //
-    //     //at this point we have stacked every argument
-    //     function_handler(function, mem, NO_DEPTH);
-    //
-    //   }
-    //   continue;
-    // }
+
+    if (strcmp(node->ll->head->data->token, "") != 0) {
+
+      strcpy(stack_data.data, node->ll->head->data->token);
+      if (*node->ll->head->next->data->token == '=') {
+        if (*node->ll->head->next->next->data->token == '"') {
+          stack_data.value->identity = V_STRING;
+          strcpy(stack_data.value->v.str,
+                 node->ll->head->next->next->data->token);
+          stack_data.address = NULL;
+        } else {
+          stack_data.value->identity = V_INT;
+          stack_data.value->v.i =
+              atoi(node->ll->head->next->next->data->token);
+        }
+
+        stack_data.address = NULL;
+
+        if (!push(stack_data, &mem)) {
+          printf("attempt to redeclare variable %s\n", stack_data.data);
+        }
+      }
+
+      else {
+        dll_node_t *function = findFunction(stack_data.data, body);
+        if (!function) {
+          printf("attempt to call function %s, which does not exist\n",
+                 stack_data.data);
+          exit(69);
+        }
+        // function found: stack actual node and go to function
+        // stack_data.data = '\0';
+        // memset(stack_data.data, 0, sizeof(stack_data.data));
+        strcpy(stack_data.data, "FCALL");
+        // stack_data.value = 0;
+
+        stack_data.value->identity = 0;
+
+        stack_data.address = node;
+        // certify everything right
+        // if not right here, we gonna lose the address of the return
+        assert(push(stack_data, &mem));
+        // let's push the args to the stack
+
+        ll_node_t *callarg = node->ll->head->next;
+
+        // stack every argument
+        for (ll_node_t *arg = function->ll->head->next->next;
+             strcmp(arg->data->token, "") != 0; arg = arg->next) {
+          stack_data_t arg_data;
+
+          // strcpy(arg_data.data, arg->data->token);
+
+          // if the argument is a variable, we need to fetch its value
+          // if it is a value, we need to convert it to int
+
+          arg_data.value = bringval(callarg->data->token, mem, NO_DEPTH);
+
+          // arg_data = bringval(callarg->data->token, mem, 5)
+          //                      ? *bringval(callarg->data->token, mem, 5)
+          //                      : atoi(callarg->data->token);
+
+          arg_data.address = NULL;
+          push(arg_data, &mem);
+
+          // we need to fetch every argument from the call
+          assert(callarg = callarg->next);
+        }
+
+        // at this point we have stacked every argument
+        function_handler(function, mem, NO_DEPTH+1);
+      }
+
+      continue;
+    }
   }
 
-  // memshow(function_mem);
+  memshow(function_mem);
 }
