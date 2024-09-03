@@ -41,8 +41,9 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
   stack_node_t *node = stack->top;
 
   while (node) {
-    if (strcmp(node->data->data, var) == 0) {
-      // depth++;
+    if (strcmp(node->data->data, var) == 0 &&
+        strcmp(node->data->data, "FCALL") != 0) {
+      depth++;
       return node->data->value;
     }
     // if (strcmp(node->data->data, "FCALL") == 0) {
@@ -54,7 +55,7 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 }
 
 uint8_t push(stack_data_t data, stacks_t **stack) {
-  if (exists(data, *stack)) {
+  if (exists(data, *stack) && strcmp(data.data, "FCALL") != 0) {
     printf("Variable %s already exists\n", data.data);
   }
 
