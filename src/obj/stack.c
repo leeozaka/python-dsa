@@ -78,13 +78,12 @@ uint8_t pop(stacks_t **stack) {
   return 1;
 }
 
-uint8_t peek(stack_node_t **data, stacks_t *stack) {
+stack_node_t *peek(stacks_t *stack) {
   if (stack->size == 0) {
     return 0;
   }
 
-  *data = stack->top;
-  return 1;
+  return stack->top;
 }
 
 uint8_t isEmpty(stacks_t *stack) { return stack->size == 0; }
@@ -100,10 +99,16 @@ void memshow(stacks_t *stack) {
     if (node->data->value->identity == V_INT) {
       printf("%s %s %d %p\n", node->data->data, "INT", node->data->value->v.i,
              node->data->address);
-    } else if (node->data->value->identity == V_STRING) {
+    }
+    if (node->data->value->identity == V_STRING) {
       printf("%s %s %s %p\n", node->data->data, "STR", node->data->value->v.str,
              node->data->address);
     }
+    if (node->data->value->identity == V_NULL) {
+      printf("%s %s %d %p\n", node->data->data, "NULL",
+             node->data->value->v.i, node->data->address);
+    }
+
     node = node->next;
   }
 }

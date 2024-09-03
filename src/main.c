@@ -90,7 +90,6 @@ int main() {
     printf("\n execution stage \n\n");
   }
 
-  // memory loop start
   function_handler(main, &mem, NO_DEPTH, NULL);
 
   if (debug) {

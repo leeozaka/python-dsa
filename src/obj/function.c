@@ -22,6 +22,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
   stack_data.value = new_value();
 
   value_t *val = new_value();
+  value_t *retval = new_value();
 
   if (f_node) {
     if (exec->next)
@@ -131,8 +132,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
           }
         }
       } else {
-        // i think this resolves segfault problems
-        // should get the name of variable and find it in the memory
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
           val = bringval(node->ll->head->next->data->token, *mem, depth);
           if (val) {
@@ -236,4 +235,10 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
   }
   clear_stack(mem);
+  if (peek(*mem)->data->value->identity != V_NULL) {
+      printf("returning value not implemented\n");
+      pop(mem);
+       //carrying return value until here
+       //next step is to implement the return statement
+  } 
 }
