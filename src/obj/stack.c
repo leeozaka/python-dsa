@@ -37,6 +37,29 @@ uint8_t exists(stack_data_t data, stacks_t *stack) {
   return 0;
 }
 
+void replace_mem(stack_data_t data, stacks_t *stack) {
+  stack_node_t *node = stack->top;
+  while (node) {
+    if (strcmp(node->data->data, data.data) == 0) {
+      node->data->value = data.value;
+      return;
+    }
+    node = node->next;
+  }
+}
+
+stack_node_t *bring(const char *var, stacks_t *stack) {
+  stack_node_t *node = stack->top;
+
+  while (node) {
+    if (strcmp(node->data->data, var) == 0) {
+      return node;
+    }
+    node = node->next;
+  }
+  return NULL;
+}
+
 value_t *bringval(const char *var, stacks_t *stack, int depth) {
   stack_node_t *node = stack->top;
 
@@ -55,8 +78,11 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 }
 
 uint8_t push(stack_data_t data, stacks_t **stack) {
-  if (exists(data, *stack) && strcmp(data.data, "FCALL") != 0) {
-    printf("Variable %s already exists\n", data.data);
+  if (exists(data, *stack)) {
+      return 1;
+    // if (strcmp(data.data, "FCALL") != 0) {
+    //     replace_mem(data, *stack);
+    // }
   }
 
   stack_node_t *node = stack_node_create(data);
@@ -105,8 +131,8 @@ void memshow(stacks_t *stack) {
              node->data->address);
     }
     if (node->data->value->identity == V_NULL) {
-      printf("%s %s %d %p\n", node->data->data, "NULL",
-             node->data->value->v.i, node->data->address);
+      printf("%s %s %d %p\n", node->data->data, "NULL", node->data->value->v.i,
+             node->data->address);
     }
 
     node = node->next;
