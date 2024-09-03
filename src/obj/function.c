@@ -85,46 +85,49 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
             putchar(*printc);
             printc++;
           }
-          if (*printc == '%' || *printc == '"' || *printc == '\\')
+          if (*printc == '%' || *printc == '\\') {
             printc++;
-          switch (*printc) {
-          case 'd':
-            val = bringval(printnode->data->token, *mem, depth);
+            switch (*printc) {
+            case 'd':
+              val = bringval(printnode->data->token, *mem, depth);
 
-            if (val->identity == V_INT) {
-              fprintf(stdout, "%d", val->v.i);
-            } else {
-              fprintf(stdout, "%d", atoi(printnode->data->token));
-            }
-
-            printc++;
-            printnode = printnode->next;
-            break;
-          case 'n':
-            fprintf(stdout, "\n");
-            printc++;
-
-            break;
-
-          case 's':
-            val = bringval(printnode->data->token, *mem, depth);
-            if (debugFunction)
-              printf("val == string? %d\n", val->identity == V_STRING);
-
-            if (val) {
-              switch (val->identity) {
-              case V_INT:
+              if (val->identity == V_INT) {
                 fprintf(stdout, "%d", val->v.i);
-                break;
-              case V_STRING:
-                fprintf(stdout, "%s", val->v.str);
-                break;
+              } else {
+                fprintf(stdout, "%d", atoi(printnode->data->token));
               }
-            }
 
+              printc++;
+              printnode = printnode->next;
+              break;
+            case 'n':
+              fprintf(stdout, "\n");
+              printc++;
+
+              break;
+
+            case 's':
+              val = bringval(printnode->data->token, *mem, depth);
+              if (debugFunction)
+                printf("val == string? %d\n", val->identity == V_STRING);
+
+              if (val) {
+                switch (val->identity) {
+                case V_INT:
+                  fprintf(stdout, "%d", val->v.i);
+                  break;
+                case V_STRING:
+                  fprintf(stdout, "%s", val->v.str);
+                  break;
+                }
+              }
+
+              printc++;
+              printnode = printnode->next;
+              break;
+            }
+          } else {
             printc++;
-            printnode = printnode->next;
-            break;
           }
         }
       } else {
@@ -229,10 +232,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
         // at this point we have stacked every argument
         function_handler(body, mem, depth + 1, function_find);
-
       }
-
-      continue;
     }
   }
   clear_stack(mem);
