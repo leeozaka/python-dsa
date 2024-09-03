@@ -9,7 +9,6 @@
 #include "include/ll.h"
 #include "include/stack.h"
 #include "include/strctrl.h"
-#include "include/value.h"
 
 #define NO_DEPTH 0
 
@@ -25,9 +24,6 @@ int main() {
   dll_t *main = dll_create();
 
   stacks_t *mem = stack_create();
-
-  stack_data_t stack_data;
-  stack_data.value = new_value();
 
   FILE *stream = fopen("test.py", "r");
   assert(stream);
@@ -102,5 +98,6 @@ int main() {
     mem ? memshow(mem) : 0;
   }
 
+  clear_stack(&mem);
   return 0;
 }

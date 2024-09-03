@@ -202,7 +202,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         }
         // function found: stack actual node and go to function
         strcpy(stack_data.data, "FCALL");
-        stack_data.value->identity = V_INT;
+        stack_data.value->identity = V_NULL;
         stack_data.value->v.i = 0;
 
         stack_data.address = node;

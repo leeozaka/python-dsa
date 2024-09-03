@@ -5,6 +5,7 @@
 #define STR_SIZE 256
 
 enum {
+    V_NULL,
     V_INT,
     V_FLOAT,
     V_CHAR,
