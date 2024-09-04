@@ -183,6 +183,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       } else {
         printf("should return value\n");
       }
+      continue;
       break;
     }
 
@@ -229,11 +230,11 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       // printf("function_find: %p\n", function_find);
 
       if (!function_find) {
-          function_find = findFunction(node->ll->head->data->token, body);
-          if (!function_find) {
-            perror("function not found");
-            exit(69);
-          }
+        function_find = findFunction(node->ll->head->data->token, body);
+        if (!function_find) {
+          perror("function not found");
+          exit(69);
+        }
       }
 
       // function found: stack actual node and go to function
@@ -297,32 +298,40 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
   }
 
   clear_stack(mem);
-  if (peek(*mem)->data->value->identity == V_NULL) {
-    // carrying return value until here
-    // next step is to implement the return statement
+  if (!isEmpty(*mem)) {
+    if (peek(*mem)->data->value->identity == V_NULL) {
+      // carrying return value until here
+      // next step is to implement the return statement
 
-    if (f_node) {
-      stack_node_t *ret = peek(*mem);
-      if (debugFunction) {
-        printf("returning value: %d\n", ret->data->value->v.i);
+      if (f_node) {
+        stack_node_t *ret = peek(*mem);
+        if (debugFunction) {
+          printf("returning value: %d\n", ret->data->value->v.i);
+        }
+
+        *ret->data->value = *retval;
+        free(retval);
+
+        dll_node_t *var_name = ret->data->address;
+        if (debugFunction)
+          printf("f_name: %s\n", var_name->ll->head->data->token);
+
+        stack_node_t *mem_to_return_value =
+            bring(var_name->ll->head->data->token, *mem);
+        if (debugFunction)
+          printf("mem_to_return_value: %s\n", mem_to_return_value->data->data);
+        mem_to_return_value->data->value = ret->data->value;
+
+        if (peek(*mem)->data->value->identity == V_NULL) {
+          pop(mem);
+        }
       }
 
-      *ret->data->value = *retval;
-      free(retval);
-
-      dll_node_t *var_name = ret->data->address;
+      // printf("stack head: %s\n", peek(*mem)->data->data);
+      // segmentation fault here
+      // pop(&(*mem));
       if (debugFunction)
-        printf("f_name: %s\n", var_name->ll->head->data->token);
-
-      stack_node_t *mem_to_return_value =
-          bring(var_name->ll->head->data->token, *mem);
-      if (debugFunction)
-        printf("mem_to_return_value: %s\n", mem_to_return_value->data->data);
-      mem_to_return_value->data->value = ret->data->value;
-
-      pop(mem);
-      if (debugFunction)
-        memshow(*mem);
+        memshow((*mem));
     }
   }
 }

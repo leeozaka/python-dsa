@@ -79,7 +79,7 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 
 uint8_t push(stack_data_t data, stacks_t **stack) {
   if (exists(data, *stack)) {
-      return 1;
+    return 1;
     // if (strcmp(data.data, "FCALL") != 0) {
     //     replace_mem(data, *stack);
     // }
@@ -92,16 +92,17 @@ uint8_t push(stack_data_t data, stacks_t **stack) {
   return 1;
 }
 
-uint8_t pop(stacks_t **stack) {
+stack_node_t *pop(stacks_t **stack) {
   if ((*stack)->size == 0) {
     return 0;
   }
 
   stack_node_t *node = (*stack)->top;
   (*stack)->top = node->next;
-  free(node);
   (*stack)->size--;
-  return 1;
+  free(node);
+
+  return node;
 }
 
 stack_node_t *peek(stacks_t *stack) {
@@ -143,7 +144,8 @@ void clear_stack(stacks_t **stack) {
   if ((*stack)->size == 0) {
     return;
   }
-  while (strcmp((*stack)->top->data->data, "FCALL") != 0) {
+  while (strcmp((*stack)->top->data->data, "FCALL") != 0 &&
+         (*stack)->size > 0) {
     pop(stack);
   }
 }

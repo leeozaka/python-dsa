@@ -29,7 +29,7 @@ stacks_t *stack_create();
 stack_node_t *stack_node_create(stack_data_t data);
 
 uint8_t push(stack_data_t data, stacks_t **stack);
-uint8_t pop(stacks_t **stack);
+stack_node_t *pop(stacks_t **stack);
 
 void replace_mem(stack_data_t data, stacks_t *stack);
 stack_node_t *bring(const char *var, stacks_t *stack);
