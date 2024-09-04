@@ -12,7 +12,7 @@
 
 #define NO_DEPTH 0
 
-int debug = 1;
+int debug = 0;
 
 int main() {
   int type;
@@ -97,6 +97,6 @@ int main() {
     mem ? memshow(mem) : 0;
   }
 
-  clear_stack(&mem);
+  // clear_stack(&mem);
   return 0;
 }
