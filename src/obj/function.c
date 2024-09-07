@@ -5,7 +5,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 0;
+int debugFunction = 1;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -92,7 +92,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
             printc++;
             switch (*printc) {
             case 'd':
-              val = bringval(printnode->data->token, *mem, depth);
+              val = bringval(printnode->data->token, *mem);
 
               if (val->identity == V_INT) {
                 fprintf(stdout, "%d", val->v.i);
@@ -110,7 +110,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
               break;
 
             case 's':
-              val = bringval(printnode->data->token, *mem, depth);
+              val = bringval(printnode->data->token, *mem);
               if (debugFunction)
                 printf("val == string? %d\n", val->identity == V_STRING);
 
@@ -135,7 +135,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         }
       } else {
         while (strcmp(node->ll->head->next->data->token, "") != 0) {
-          val = bringval(node->ll->head->next->data->token, *mem, depth);
+          val = bringval(node->ll->head->next->data->token, *mem);
           if (val) {
             switch (val->identity) {
             case V_INT:
@@ -168,7 +168,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         if (debugFunction)
           memshow(*mem);
         if (f_node != NULL) {
-          retval = bringval(node->ll->head->next->data->token, *mem, depth);
+          retval = bringval(node->ll->head->next->data->token, *mem);
           if (retval) {
             if (debugFunction) {
               if (retval->identity == V_STRING) {
@@ -193,7 +193,12 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     dll_node_t *function_find = NULL;
     if (node->ll->head->next->next) {
       strcpy(stack_data.data, node->ll->head->next->next->data->token);
-      function_find = findFunction(stack_data.data, body);
+      function_find = findFunction(stack_data.data, function);
+    }
+
+    if (debugFunction && function_find) {
+        printf("function name: %s\n", function_find->ll->head->next->data->token);
+        printf("function position: %p\n", function_find);
     }
 
     if (*node->ll->head->next->data->token == '=' && !function_find) {
@@ -275,7 +280,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
         // if the argument is a variable, we need to fetch its value
         if (exists(arg_data, *mem)) {
-          arg_data.value = bringval(callarg->data->token, *mem, depth);
+          arg_data.value = bringval(callarg->data->token, *mem);
         } else {
           // if not, we need to fetch the value from the call
           if (*callarg->data->token == '"') {
@@ -299,7 +304,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       // at this point we have stacked every argument
       if (debugFunction)
         printf("\n\tfunction in\n\n");
-      function_handler(body, mem, depth + 1, function_find);
+      function_handler(function, mem, 1,function_find);
       if (debugFunction)
         printf("\n\tfunction returned\n\n");
     }

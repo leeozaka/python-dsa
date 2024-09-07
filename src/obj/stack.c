@@ -60,13 +60,12 @@ stack_node_t *bring(const char *var, stacks_t *stack) {
   return NULL;
 }
 
-value_t *bringval(const char *var, stacks_t *stack, int depth) {
+value_t *bringval(const char *var, stacks_t *stack) {
   stack_node_t *node = stack->top;
 
   while (node) {
     if (strcmp(node->data->data, var) == 0 &&
         strcmp(node->data->data, "FCALL") != 0) {
-      depth++;
       return node->data->value;
     }
     // if (strcmp(node->data->data, "FCALL") == 0) {
