@@ -126,7 +126,7 @@ void memshow(stacks_t *stack) {
              node->data->address);
     }
     if (node->data->value->identity == V_STRING) {
-      printf("%s %s %s %p\n", node->data->data, "STR", node->data->value->v.str,
+      printf("%s %s \"%s\" %p\n", node->data->data, "STR", node->data->value->v.str,
              node->data->address);
     }
     if (node->data->value->identity == V_NULL) {
