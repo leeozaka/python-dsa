@@ -79,10 +79,9 @@ value_t *bringval(const char *var, stacks_t *stack, int depth) {
 
 uint8_t push(stack_data_t data, stacks_t **stack) {
   if (exists(data, *stack)) {
-    return 1;
-    // if (strcmp(data.data, "FCALL") != 0) {
-    //     replace_mem(data, *stack);
-    // }
+    if (strcmp(data.data, "FCALL") != 0) {
+        replace_mem(data, *stack);
+    }
   }
 
   stack_node_t *node = stack_node_create(data);

@@ -168,12 +168,15 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         if (debugFunction)
           memshow(*mem);
         if (f_node != NULL) {
-          if (debugFunction)
-            printf("returning value: %s\n", node->ll->head->next->data->token);
           retval = bringval(node->ll->head->next->data->token, *mem, depth);
           if (retval) {
-            if (debugFunction)
-              printf("returning value: %d\n", retval->v.i);
+            if (debugFunction) {
+              if (retval->identity == V_STRING) {
+                printf("returning value: %s\n", retval->v.str);
+              } else {
+                printf("returning value: %d\n", retval->v.i);
+              }
+            }
             stack_data.value = retval;
             stack_data.value->identity = retval->identity;
           }
@@ -222,9 +225,13 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
       stack_data.address = NULL;
 
-      if (!push(stack_data, mem)) {
-        printf("attempt to redeclare variable %s\n", stack_data.data);
-      }
+      // remade this part to redeclare variables,
+      // the code were already in the stack.c file but it was commented
+      // if (!push(stack_data, mem)) {
+      //   printf("attempt to redeclare variable %s\n", stack_data.data);
+      // }
+
+      assert(push(stack_data, mem));
     } else {
       if (!function_find) {
         function_find = findFunction(node->ll->head->data->token, body);
@@ -290,7 +297,11 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       }
 
       // at this point we have stacked every argument
+      if (debugFunction)
+        printf("\n\tfunction in\n\n");
       function_handler(body, mem, depth + 1, function_find);
+      if (debugFunction)
+        printf("\n\tfunction returned\n\n");
     }
   }
 
@@ -304,9 +315,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
       // carrying return value until here
       stack_node_t *ret = peek(*mem);
-      if (debugFunction) {
-        printf("returning value: %s\n", ret->data->value->v.str);
-      }
 
       *ret->data->value = *retval;
       free(retval);
@@ -326,7 +334,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         printf("bring? %s\n",
                mem_to_return_value ? mem_to_return_value->data->data : "NULL");
 
-      if (mem_to_return_value == 0) {
+      if (!mem_to_return_value) {
         stack_data_t chicolandia_variaveis;
         chicolandia_variaveis.value = ret->data->value;
         strcpy(chicolandia_variaveis.data,

@@ -95,8 +95,8 @@ int main() {
   if (debug) {
     printf("\n\n memory dump \n\n");
     mem ? memshow(mem) : 0;
-  }
 
-  // clear_stack(&mem);
+    printf("\t end \n");
+  }
   return 0;
 }
