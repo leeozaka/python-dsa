@@ -298,13 +298,14 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     clear_stack(mem);
 
   if (!isEmpty(*mem)) {
+    uint8_t flag = 1;
     if (peek(*mem)->data->value->identity == V_NULL &&
         retval->identity != V_NULL) {
 
       // carrying return value until here
       stack_node_t *ret = peek(*mem);
       if (debugFunction) {
-        printf("returning value: %d\n", ret->data->value->v.i);
+        printf("returning value: %s\n", ret->data->value->v.str);
       }
 
       *ret->data->value = *retval;
@@ -317,12 +318,33 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       stack_node_t *mem_to_return_value =
           bring(var_name->ll->head->data->token, *mem);
 
+      // if (debugFunction && mem_to_return_value)
+      //   printf("mem_to_return_value: %s\n", mem_to_return_value->data->data);
+      // mem_to_return_value->data->value = ret->data->value;
+
       if (debugFunction)
-        printf("mem_to_return_value: %s\n", mem_to_return_value->data->data);
-      mem_to_return_value->data->value = ret->data->value;
+        printf("bring? %s\n",
+               mem_to_return_value ? mem_to_return_value->data->data : "NULL");
+
+      if (mem_to_return_value == 0) {
+        stack_data_t chicolandia_variaveis;
+        chicolandia_variaveis.value = ret->data->value;
+        strcpy(chicolandia_variaveis.data,
+               (peek(*mem))->data->address->ll->head->data->token);
+        if (debugFunction)
+          printf("chicolandia_variaveis.data: %s\n",
+                 chicolandia_variaveis.data);
+        chicolandia_variaveis.address = NULL;
+        pop(mem);
+        push(chicolandia_variaveis, mem);
+        flag = 0;
+      }
     }
 
-    pop(mem);
+    if (flag) {
+      pop(mem);
+    }
+
     if (debugFunction)
       memshow((*mem));
   }

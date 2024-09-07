@@ -102,7 +102,7 @@ stack_node_t *pop(stacks_t **stack) {
   (*stack)->size--;
   free(node);
 
-  return node;
+  return NULL;
 }
 
 stack_node_t *peek(stacks_t *stack) {
