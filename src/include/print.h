@@ -6,6 +6,6 @@
 #include "ll.h"
 #include "stack.h"
 
-void print(ll_t *main, stacks_t *mem);
+void print(dll_node_t *node, stacks_t *mem);
 
 #endif

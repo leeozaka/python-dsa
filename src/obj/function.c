@@ -5,7 +5,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 1;
+int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -20,7 +20,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
   stack_data_t stack_data;
   stack_data.value = new_value();
 
-  value_t *val = new_value();
   value_t *retval = new_value();
 
   if (f_node) {
@@ -55,103 +54,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
     if (strcmp(node->ll->head->data->token, "print") == 0) {
-      if (*node->ll->head->next->data->token == '"') {
-        ll_node_t *printnode = node->ll->head->next;
-        char *printstr = node->ll->head->next->data->token;
-        char *printc;
-        // int i = 0;
-
-        uint8_t percent = 0, empty = 0;
-
-        percent = *printnode->data->token == '%';
-        empty = *printnode->data->token == '\0';
-
-        while (printnode && !percent && !empty) {
-          if (!printnode) {
-            perror("invalid print statement 1");
-            exit(69);
-          }
-
-          printnode = printnode->next;
-          percent = *printnode->data->token == '%';
-          empty = *printnode->data->token == '\0';
-        }
-
-        printnode = printnode->next;
-
-        if (debugFunction)
-          printf("printnode: %s\n", printnode->data->token);
-
-        for (printc = (char *)printstr; *printc != '\0';) {
-          while (*printc != '%' && *printc != '\0' && *printc != '"' &&
-                 *printc != '\\') {
-            putchar(*printc);
-            printc++;
-          }
-          if (*printc == '%' || *printc == '\\') {
-            printc++;
-            switch (*printc) {
-            case 'd':
-              val = bringval(printnode->data->token, *mem);
-
-              if (val->identity == V_INT) {
-                fprintf(stdout, "%d", val->v.i);
-              } else {
-                fprintf(stdout, "%d", atoi(printnode->data->token));
-              }
-
-              printc++;
-              printnode = printnode->next;
-              break;
-            case 'n':
-              fprintf(stdout, "\n");
-              printc++;
-
-              break;
-
-            case 's':
-              val = bringval(printnode->data->token, *mem);
-              if (debugFunction)
-                printf("val == string? %d\n", val->identity == V_STRING);
-
-              if (val) {
-                switch (val->identity) {
-                case V_INT:
-                  fprintf(stdout, "%d", val->v.i);
-                  break;
-                case V_STRING:
-                  fprintf(stdout, "%s", val->v.str);
-                  break;
-                }
-              }
-
-              printc++;
-              printnode = printnode->next;
-              break;
-            }
-          } else {
-            printc++;
-          }
-        }
-      } else {
-        while (strcmp(node->ll->head->next->data->token, "") != 0) {
-          val = bringval(node->ll->head->next->data->token, *mem);
-          if (val) {
-            switch (val->identity) {
-            case V_INT:
-              fprintf(stdout, "%d ", val->v.i);
-              break;
-            case V_STRING:
-              fprintf(stdout, "%s", val->v.str);
-              break;
-            }
-          } else {
-            fprintf(stdout, "%s", node->ll->head->next->data->token);
-          }
-          node->ll->head->next = node->ll->head->next->next;
-        }
-        printf("\n");
-      }
+      print(node, *mem);
       continue;
     }
 
@@ -197,8 +100,8 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
 
     if (debugFunction && function_find) {
-        printf("function name: %s\n", function_find->ll->head->next->data->token);
-        printf("function position: %p\n", function_find);
+      printf("function name: %s\n", function_find->ll->head->next->data->token);
+      printf("function position: %p\n", function_find);
     }
 
     if (*node->ll->head->next->data->token == '=' && !function_find) {
@@ -304,7 +207,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       // at this point we have stacked every argument
       if (debugFunction)
         printf("\n\tfunction in\n\n");
-      function_handler(function, mem, 1,function_find);
+      function_handler(function, mem, 1, function_find);
       if (debugFunction)
         printf("\n\tfunction returned\n\n");
     }

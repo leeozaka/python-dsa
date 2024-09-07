@@ -1,68 +1,108 @@
 #include "../include/print.h"
-// #include "../include/dll.h"
-#include "../include/stack.h"
+#include "../include/dll.h"
 #include "../include/ll.h"
+#include "../include/stack.h"
+#include <string.h>
 
-#include <stdio.h>
+int printFunction = 0;
 
-void print(ll_t *list, stacks_t *mem) {
-    ll_node_t *printnode = list->head;
-  char *printstr = printnode->next->data->token;
-  char *printc;
-  // int i = 0;
-
-  uint8_t percent = 0, empty = 0;
-
-  percent = *printnode->data->token == '%';
-  empty = *printnode->data->token == '\0';
-
-  while (printnode && !percent && !empty) {
-    if (!printnode) {
-      perror("invalid print statement 1");
-      exit(69);
-    }
-
-    // printnode = printnode->next;
-    printnode = printnode->next;
-    percent = *printnode->next->data->token == '%';
-    empty = *printnode->next->data->token == '\0';
-  }
-
-  printnode = printnode->next;
-
-  // int *i = NULL;
+void print(dll_node_t *node, stacks_t *mem) {
   value_t *val = new_value();
+  if (*node->ll->head->next->data->token == '"') {
+    ll_node_t *printnode = node->ll->head->next;
+    char *printstr = node->ll->head->next->data->token;
+    char *printc;
+    // int i = 0;
 
-  // printf("printstr: %s\n", printstr);
-  for (printc = (char *)printstr; *printc != '\0';) {
-    while (*printc != '%' && *printc != '\0' && *printc != '"' &&
-           *printc != '\\') {
-      putchar(*printc);
-      printc++;
+    uint8_t percent = 0, empty = 0;
+
+    percent = *printnode->data->token == '%';
+    empty = *printnode->data->token == '\0';
+
+    while (printnode && !percent && !empty) {
+      if (!printnode) {
+        perror("invalid print statement 1");
+        exit(69);
+      }
+
+      printnode = printnode->next;
+      percent = *printnode->data->token == '%';
+      empty = *printnode->data->token == '\0';
     }
-    if (*printc == '%' || *printc == '"' || *printc == '\\')
-      printc++;
-    switch (*printc) {
-    case 'd':
-      val = bringval(printnode->data->token, mem, 0);
 
-            if (val->identity == V_INT) {
+    printnode = printnode->next;
+
+    if (printFunction)
+      printf("printnode: %s\n", printnode->data->token);
+
+    for (printc = (char *)printstr; *printc != '\0';) {
+      while (*printc != '%' && *printc != '\0' && *printc != '"' &&
+             *printc != '\\') {
+        putchar(*printc);
+        printc++;
+      }
+      if (*printc == '%' || *printc == '\\') {
+        printc++;
+        switch (*printc) {
+        case 'd':
+          val = bringval(printnode->data->token, mem);
+
+          if (val->identity == V_INT) {
+            fprintf(stdout, "%d", val->v.i);
+          } else {
+            fprintf(stdout, "%d", atoi(printnode->data->token));
+          }
+
+          printc++;
+          printnode = printnode->next;
+          break;
+        case 'n':
+          fprintf(stdout, "\n");
+          printc++;
+
+          break;
+
+        case 's':
+          val = bringval(printnode->data->token, mem);
+          if (printFunction)
+            printf("val == string? %d\n", val->identity == V_STRING);
+
+          if (val) {
+            switch (val->identity) {
+            case V_INT:
               fprintf(stdout, "%d", val->v.i);
-            } else {
-              fprintf(stdout, "%d", atoi(printnode->data->token));
+              break;
+            case V_STRING:
+              fprintf(stdout, "%s", val->v.str);
+              break;
             }
+          }
 
-            // fprintf(stdout, "%d", i ? *i : atoi(printnode->data->token));
-            printc++;
-            printnode = printnode->next;
-            break;
-    case 'n':
-      fprintf(stdout, "\n");
-      printc++;
-
-      // ainda nao guardo strings em variaveis
-    case 's':
-      break;
+          printc++;
+          printnode = printnode->next;
+          break;
+        }
+      } else {
+        printc++;
+      }
     }
+  } else {
+    while (strcmp(node->ll->head->next->data->token, "") != 0) {
+      val = bringval(node->ll->head->next->data->token, mem);
+      if (val) {
+        switch (val->identity) {
+        case V_INT:
+          fprintf(stdout, "%d ", val->v.i);
+          break;
+        case V_STRING:
+          fprintf(stdout, "%s", val->v.str);
+          break;
+        }
+      } else {
+        fprintf(stdout, "%s", node->ll->head->next->data->token);
+      }
+      node->ll->head->next = node->ll->head->next->next;
+    }
+    printf("\n");
   }
 }
