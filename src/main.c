@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <conio.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,14 +22,64 @@ int main() {
   char token_text[TOKENSIZE] = "", *line, rep[TOKENSIZE][300];
   token_data_t token;
 
+  struct dirent *entry;
+  const char *directory_path = "./";
+  DIR *dir = opendir(directory_path);
+
+  if (dir == NULL) {
+    return -1;
+  }
+
+  // allocate memory for up to 100 files
+  // but problably you will not have 100 files in the directory lol
+  char **files = (char **)malloc(100 * sizeof(char *));
+  for (int i = 0; i < 100; i++) {
+    files[i] = (char *)malloc(100 * sizeof(char));
+  }
+
+  // unsigned because we are not going to have negative files
+  unsigned int files_count = 0;
+  while ((entry = readdir(dir)) != NULL) {
+    if (strstr(entry->d_name, ".py") != NULL) {
+      strcpy(files[files_count], entry->d_name);
+      files_count++;
+    }
+  }
+
+  for (unsigned int i = 0; i < files_count; i++) {
+    printf("  %d. %s\n", i + 1, files[i]);
+  }
+
+  unsigned int file_number;
+  printf("Enter the file number to run: ");
+  fscanf(stdin, "%d", &file_number);
+
+  FILE *stream;
+  if (file_number <= files_count && file_number > 0) {
+    stream = fopen(files[file_number - 1], "r");
+    assert(stream);
+    if (debug)
+      printf("Running %s\n", files[file_number - 1]);
+
+  } else {
+    printf("Invalid file number\n");
+    exit(-1);
+  }
+
+  closedir(dir);
+
+  // clean up thrash
+  for (int i = 0; i < 100; i++) {
+    free(files[i]);
+  }
+  free(files);
+
   line = (char *)calloc(STRSIZE, sizeof(char));
   dll_t *main = dll_create();
 
   stacks_t *mem = stack_create();
 
-  FILE *stream = fopen("test.py", "r");
-  assert(stream);
-
+  // not verifying the maximum lines that u could enter here + i dont care
   while (fgets(line, STRSIZE, stream)) {
     strcpy(rep[line_number], line);
     line_number++;

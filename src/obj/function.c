@@ -5,7 +5,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 1;
+int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
