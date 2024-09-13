@@ -51,8 +51,12 @@ int main() {
   }
 
   unsigned int file_number;
-  printf("Enter the file number to run: ");
-  fscanf(stdin, "%d", &file_number);
+  if (files_count == 1) {
+    file_number = 1;
+  } else {
+    printf("Enter the file number to run: ");
+    fscanf(stdin, "%d", &file_number);
+  }
 
   FILE *stream;
   if (file_number <= files_count && file_number > 0) {
