@@ -11,6 +11,7 @@ typedef struct LL {
   ll_node_t *head;
   ll_node_t *tail;
   size_t size;
+  size_t relline;
 } ll_t;
 
 typedef struct LL_NODE_ {
@@ -18,7 +19,7 @@ typedef struct LL_NODE_ {
   struct LL_NODE_ *next;
 } ll_node_t;
 
-ll_t *ll_create();
+ll_t *ll_create(size_t line);
 ll_node_t *ll_node_create(token_data_t data);
 
 uint8_t ll_insert(token_data_t data, ll_t **ll);

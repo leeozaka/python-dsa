@@ -12,7 +12,6 @@ typedef struct DLL_NODE_ {
   ll_t *ll;
   struct DLL_NODE_ *prev;
   struct DLL_NODE_ *next;
-  size_t relline;
 } dll_node_t;
 
 typedef struct DLL {

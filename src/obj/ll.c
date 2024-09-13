@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-ll_t *ll_create() {
+ll_t *ll_create(size_t line) {
   ll_t *new = calloc(1, sizeof(ll_t));
   new->head = NULL;
   new->tail = NULL;
   new->size = 0;
+  new->relline = line;
 
   return new;
 }
@@ -68,7 +69,7 @@ size_t ll_position(token_data_t data, ll_node_t **head) {
 
 void ll_show(ll_t *ll) {
   ll_node_t *current = ll->head;
-  printf("[ ]: ");
+  printf("%2zu | [ ]: ", ll->relline);
   while (current != NULL) {
     printf("%s %s ", current->data->token, current->next ? "->" : " ");
     current = current->next;

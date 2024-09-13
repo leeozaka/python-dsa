@@ -12,7 +12,7 @@
 
 #define NO_DEPTH 0
 
-int debug = 1;
+int debug = 0;
 
 int main() {
   int type;
@@ -34,8 +34,8 @@ int main() {
     if (classifier(line) == COMMENT || classifier(line) == NEWLINE) {
       continue;
     }
-    dll_node_t *actual = insert(ll_create(), &main);
-    actual->relline = line_number;
+    dll_node_t *actual = insert(ll_create(line_number), &main);
+    // actual->relline = line_number;
 
     while (*line) {
       if (startsWithFourSpaces(line)) {
@@ -85,14 +85,9 @@ int main() {
   // file read loop end
   fclose(stream);
 
-  if (debug)
-    for (size_t i = 0; i < line_number; i++) {
-      printf("%zu | %s", i + 1, rep[i]);
-    }
-
   if (debug) {
     for (dll_node_t *node = main->head; node; node = node->next) {
-      printf("line: %zu - ", node->relline);
+      printf(" ");
       ll_show(node->ll);
     }
 
