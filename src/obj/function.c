@@ -5,7 +5,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 0;
+int debugFunction = 1;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -234,9 +234,13 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       stack_node_t *mem_to_return_value =
           bring(var_name->ll->head->data->token, *mem);
 
-      // if (debugFunction && mem_to_return_value)
-      //   printf("mem_to_return_value: %s\n", mem_to_return_value->data->data);
-      // mem_to_return_value->data->value = ret->data->value;
+      if (debugFunction && mem_to_return_value) {
+        printf("mem_to_return_value: %p\n", mem_to_return_value);
+        printf("mem_to_return_value: %s\n", mem_to_return_value->data->data);
+      }
+
+      if (mem_to_return_value)
+        mem_to_return_value->data->value = ret->data->value;
 
       if (debugFunction)
         printf("bring? %s\n",
@@ -261,7 +265,9 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       pop(mem);
     }
 
-    if (debugFunction)
+    if (debugFunction) {
+      printf("-mem-\n");
       memshow((*mem));
+    }
   }
 }
