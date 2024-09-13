@@ -3,7 +3,7 @@
 
 #include "data.h"
 #include "ll.h"
-#include <stdlib.h> 
+#include <stdlib.h>
 
 typedef struct DLL_NODE_ dll_node_t;
 typedef struct DLL dll_t;
@@ -12,6 +12,7 @@ typedef struct DLL_NODE_ {
   ll_t *ll;
   struct DLL_NODE_ *prev;
   struct DLL_NODE_ *next;
+  size_t relline;
 } dll_node_t;
 
 typedef struct DLL {

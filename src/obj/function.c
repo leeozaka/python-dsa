@@ -5,7 +5,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 1;
+int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -45,7 +45,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     printf("function body:\n");
     for (dll_node_t *node = body->head; node; node = node->next) {
       for (int i = 0; i < depth; i++) {
-        printf("  ");
+        printf("  %zu", node->relline);
       }
       ll_show(node->ll);
     }

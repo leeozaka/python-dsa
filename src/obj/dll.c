@@ -172,7 +172,7 @@ dll_node_t *findFunction(const char *name, dll_t *dll) {
   dll_node_t *current = dll->head;
   while (current != NULL) {
     if (strcmp(current->ll->head->data->token, "def") == 0) {
-        if (strcmp(current->ll->head->next->data->token, name) == 0) {
+      if (strcmp(current->ll->head->next->data->token, name) == 0) {
         return current;
       }
     }

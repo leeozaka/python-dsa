@@ -12,12 +12,12 @@
 
 #define NO_DEPTH 0
 
-int debug = 0;
+int debug = 1;
 
 int main() {
   int type;
-  size_t index = 0;
-  char token_text[TOKENSIZE] = "", *line;
+  size_t index = 0, line_number = 0;
+  char token_text[TOKENSIZE] = "", *line, rep[TOKENSIZE][300];
   token_data_t token;
 
   line = (char *)calloc(STRSIZE, sizeof(char));
@@ -29,10 +29,13 @@ int main() {
   assert(stream);
 
   while (fgets(line, STRSIZE, stream)) {
+    strcpy(rep[line_number], line);
+    line_number++;
     if (classifier(line) == COMMENT || classifier(line) == NEWLINE) {
       continue;
     }
     dll_node_t *actual = insert(ll_create(), &main);
+    actual->relline = line_number;
 
     while (*line) {
       if (startsWithFourSpaces(line)) {
@@ -82,8 +85,14 @@ int main() {
   // file read loop end
   fclose(stream);
 
+  if (debug)
+    for (size_t i = 0; i < line_number; i++) {
+      printf("%zu | %s", i + 1, rep[i]);
+    }
+
   if (debug) {
     for (dll_node_t *node = main->head; node; node = node->next) {
+      printf("line: %zu - ", node->relline);
       ll_show(node->ll);
     }
 
