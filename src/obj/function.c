@@ -1,11 +1,12 @@
 #include "../include/function.h"
+#include "../include/for.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
 #define NO_DEPTH 0
 
-int debugFunction = 0;
+int debugFunction = 1;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -54,6 +55,19 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
+    if (strcmp(node->ll->head->data->token, "for") == 0) {
+      if (debugFunction)
+        printf("\t[for]\n");
+
+      size_t x = for_handler(function, mem, 1, node);
+      printf("x: %zu\n", x);
+      for (size_t i = 0; i < x; i++) {
+        node = node->next;
+      }
+
+      continue;
+    }
+
     if (strcmp(node->ll->head->data->token, "print") == 0) {
       print(node, *mem);
       continue;
@@ -145,7 +159,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       if (!function_find) {
         function_find = findFunction(node->ll->head->data->token, body);
         if (!function_find) {
-          perror("function not found");
+          fprintf(stdout, "function %s not found", node->ll->head->data->token);
           exit(69);
         }
       }
