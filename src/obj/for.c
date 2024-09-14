@@ -271,6 +271,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
     for_info.value->v.i++;
     replace_mem(for_info, *mem);
   }
-  clear_stack(mem);
+  // clear_stack(mem);
   return line_count;
 }

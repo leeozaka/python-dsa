@@ -62,7 +62,8 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       size_t x = for_handler(function, mem, 1, node);
       printf("x: %zu\n", x);
       for (size_t i = 0; i < x; i++) {
-        node = node->next;
+        if (node->next)
+          node = node->next;
       }
 
       continue;
