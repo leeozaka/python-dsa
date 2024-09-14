@@ -6,7 +6,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 1;
+int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -60,12 +60,16 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         printf("\t[for]\n");
 
       size_t x = for_handler(function, mem, 1, node);
-      printf("x: %zu\n", x);
+      if (debugFunction)
+        printf("lines: %zu\n", x);
+
       for (size_t i = 0; i < x; i++) {
         if (node->next)
           node = node->next;
       }
 
+      if (debugFunction)
+        printf("\t[for end]\n");
       continue;
     }
 
@@ -160,7 +164,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       if (!function_find) {
         function_find = findFunction(node->ll->head->data->token, body);
         if (!function_find) {
-          fprintf(stdout, "function %s not found", node->ll->head->data->token);
+          printf("function %s not found", node->ll->head->data->token);
           exit(69);
         }
       }
@@ -262,7 +266,14 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         printf("bring? %s\n",
                mem_to_return_value ? mem_to_return_value->data->data : "NULL");
 
-      if (!mem_to_return_value) {
+      if (debugFunction)
+        printf("returning to %s\n",
+               !findFunction(var_name->ll->head->data->token, function)
+                   ? "variable"
+                   : "function");
+
+      if (!mem_to_return_value &&
+          !findFunction(var_name->ll->head->data->token, function)) {
         stack_data_t chicolandia_variaveis;
         chicolandia_variaveis.value = ret->data->value;
         strcpy(chicolandia_variaveis.data,
@@ -282,8 +293,9 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
 
     if (debugFunction) {
-      printf("-mem-\n");
-      memshow((*mem));
+      printf("%s", isEmpty(*mem) ? "mem is not null\n" : "mem is null\n");
+      if (*mem)
+        memshow((*mem));
     }
   }
 }

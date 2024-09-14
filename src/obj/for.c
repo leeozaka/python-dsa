@@ -22,6 +22,7 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   }
 
   size_t line_count = 0;
+  int for_range = 0;
 
   forBody = dll_create();
   dll_node_t *exec = f_node;
@@ -41,16 +42,16 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
     return -1;
   }
 
-  int for_range = atoi(exec->ll->head->next->next->next->next->data->token);
-
+  for_info.value = new_value();
   for_info.value->identity = V_INT;
+
   if (strcmp(exec->ll->head->next->next->next->data->token, "range") == 0) {
+    for_range = atoi(exec->ll->head->next->next->next->next->data->token);
     assert(exec->ll->head->next->next->next);
     for_info.value->v.i = 0;
-    // atoi(exec->ll->head->next->next->next->next->data->token);
   } else {
+    for_range = atoi(exec->ll->head->next->next->next->data->token);
     for_info.value->v.i = 0;
-    // for_info.value->v.i = atoi(exec->ll->head->next->next->data->token);
   }
   if (for_range <= 0) {
     printf("range should be greater than 0\n");
@@ -198,8 +199,7 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
         if (!function_find) {
           function_find = findFunction(node->ll->head->data->token, function);
           if (!function_find) {
-            fprintf(stdout, "function %s not found",
-                    node->ll->head->data->token);
+            printf("function %s not found", node->ll->head->data->token);
             exit(69);
           }
         }
@@ -267,7 +267,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
           printf("\n\tfunction returned\n\n");
       }
     }
-    // memshow(*mem);
     for_info.value->v.i++;
     replace_mem(for_info, *mem);
   }

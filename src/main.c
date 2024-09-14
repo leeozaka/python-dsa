@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// only reason to include this is to use the segfault
+// message in win development fuck
+#include <signal.h>
+
 #include "include/data.h"
 #include "include/dll.h"
 #include "include/function.h"
@@ -14,9 +18,16 @@
 
 #define NO_DEPTH 0
 
+void segvHandler() {
+  printf("Segmentation fault\n");
+  exit(EXIT_FAILURE);
+}
+
 int debug = 0;
 
 int main() {
+  signal(SIGSEGV, segvHandler);
+
   int type;
   size_t index = 0, line_number = 0;
   char token_text[TOKENSIZE] = "", *line, rep[TOKENSIZE][300];
@@ -154,7 +165,8 @@ int main() {
 
   if (debug) {
     printf("\n\n memory dump \n\n");
-    mem ? memshow(mem) : 0;
+    if (mem)
+      memshow(mem);
 
     printf("\t end \n");
   }
