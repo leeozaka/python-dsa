@@ -147,8 +147,13 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         stack_data.value->identity = V_STRING;
         strcpy(stack_data.value->v.str, dest);
       } else {
-        stack_data.value->identity = V_INT;
-        stack_data.value->v.i = atoi(node->ll->head->next->next->data->token);
+        if (!exists(stack_data, *mem)) {
+          stack_data.value->identity = V_INT;
+          stack_data.value->v.i = atoi(node->ll->head->next->next->data->token);
+        } else {
+          stack_data.value =
+              bringval(node->ll->head->next->next->data->token, *mem);
+        }
       }
 
       stack_data.address = NULL;
