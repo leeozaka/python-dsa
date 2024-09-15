@@ -79,7 +79,7 @@ value_t *bringval(const char *var, stacks_t *stack) {
 uint8_t push(stack_data_t data, stacks_t **stack) {
   if (exists(data, *stack)) {
     if (strcmp(data.data, "FCALL") != 0) {
-        replace_mem(data, *stack);
+      replace_mem(data, *stack);
     }
   }
 
@@ -126,8 +126,8 @@ void memshow(stacks_t *stack) {
              node->data->address);
     }
     if (node->data->value->identity == V_STRING) {
-      printf("%s %s \"%s\" %p\n", node->data->data, "STR", node->data->value->v.str,
-             node->data->address);
+      printf("%s %s \"%s\" %p\n", node->data->data, "STR",
+             node->data->value->v.str, node->data->address);
     }
     if (node->data->value->identity == V_NULL) {
       printf("%s %s %d %p\n", node->data->data, "NULL", node->data->value->v.i,

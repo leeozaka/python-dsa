@@ -39,7 +39,7 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
 
   if (exists(for_info, *mem)) {
     printf("variable %s already declared\n", for_info.data);
-    return -1;
+    exit(EXIT_FAILURE);
   }
 
   for_info.value = new_value();
@@ -55,7 +55,7 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   }
   if (for_range <= 0) {
     printf("range should be greater than 0\n");
-    return -1;
+    exit(EXIT_FAILURE);
   }
   for_info.address = NULL;
   assert(push(for_info, mem));
@@ -87,7 +87,9 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   if (f_node) {
     if (exec->next)
       exec = exec->next;
-    while (strcmp(exec->ll->head->data->token, "") == 0) {
+    // inverted conditions here to avoid segmentation fault
+    // as we need to ensure that exec exists before we try to access it
+    while (exec && strcmp(exec->ll->head->data->token, "") == 0) {
       ll_t *ll = exec->ll;
       for (int i = depth; i > 0; i--) {
         ll->head = ll->head->next;
@@ -128,29 +130,32 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
       }
 
       if (strcmp(node->ll->head->data->token, "return") == 0) {
-        if (strcmp(node->ll->head->next->data->token, "") != 0) {
-          if (debugFor)
-            memshow(*mem);
-          if (f_node != NULL) {
-            retval = bringval(node->ll->head->next->data->token, *mem);
-            if (retval) {
-              if (debugFor) {
-                if (retval->identity == V_STRING) {
-                  printf("returning value: %s\n", retval->v.str);
-                } else {
-                  printf("returning value: %d\n", retval->v.i);
-                }
-              }
-              stack_data.value = retval;
-              stack_data.value->identity = retval->identity;
-            }
-          } else {
-            printf("return should be in a function\n");
-          }
-        } else {
-          printf("should return value\n");
-        }
-        continue;
+        // if (strcmp(node->ll->head->next->data->token, "") != 0) {
+        //   if (debugFor)
+        //     memshow(*mem);
+        //   if (f_node != NULL) {
+        //     retval = bringval(node->ll->head->next->data->token, *mem);
+        //     if (retval) {
+        //       if (debugFor) {
+        //         if (retval->identity == V_STRING) {
+        //           printf("returning value: %s\n", retval->v.str);
+        //         } else {
+        //           printf("returning value: %d\n", retval->v.i);
+        //         }
+        //       }
+        //       stack_data.value = retval;
+        //       stack_data.value->identity = retval->identity;
+        //     }
+        //   } else {
+        //     printf("return should be in a function\n");
+        //   }
+        // } else {
+        //   printf("should return value\n");
+        // }
+        // continue;
+
+        printf("return not allowed in a for loop yet\n");
+        exit(EXIT_FAILURE);
         break;
       }
 
@@ -189,8 +194,14 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
           stack_data.value->identity = V_STRING;
           strcpy(stack_data.value->v.str, dest);
         } else {
-          stack_data.value->identity = V_INT;
-          stack_data.value->v.i = atoi(node->ll->head->next->next->data->token);
+          if (!exists(stack_data, *mem)) {
+            stack_data.value->identity = V_INT;
+            stack_data.value->v.i =
+                atoi(node->ll->head->next->next->data->token);
+          } else {
+            stack_data.value =
+                bringval(node->ll->head->next->next->data->token, *mem);
+          }
         }
 
         stack_data.address = NULL;
