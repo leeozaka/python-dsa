@@ -184,7 +184,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       assert(push(stack_data, mem));
     } else {
       if (!function_find) {
-        function_find = findFunction(node->ll->head->data->token, body);
+        function_find = findFunction(node->ll->head->data->token, function);
         if (!function_find) {
           printf("function %s not found", node->ll->head->data->token);
           exit(69);
