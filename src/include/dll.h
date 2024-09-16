@@ -25,7 +25,7 @@ dll_node_t *node_create(ll_t *ll);
 
 dll_node_t *insert(ll_t *ll, dll_t **dll);
 uint8_t insertAt(ll_t *ll, size_t index, dll_t **dll);
-uint8_t remove_dll(ll_t *ll, dll_node_t **head);
+uint8_t remove_dll(dll_node_t **head);
 uint8_t removeAt(size_t index, dll_t **dll);
 
 ll_t *get(size_t index, dll_t *head);

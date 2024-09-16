@@ -87,28 +87,19 @@ uint8_t insertAt(ll_t *ll, size_t index, dll_t **dll) {
   return 1;
 }
 
-uint8_t remove_dll(ll_t *ll, dll_node_t **head) {
+uint8_t remove_dll(dll_node_t **head) {
   dll_node_t *current = *head;
   while (current != NULL) {
-    if (current->ll == ll) {
-      if (current->prev == NULL) {
-        *head = current->next;
-        (*head)->prev = NULL;
-      } else if (current->next == NULL) {
-        current->prev->next = NULL;
-      } else {
-        current->prev->next = current->next;
-        current->next->prev = current->prev;
-      }
-
-      free(current->ll);
-      free(current);
-      return 1;
-    }
-    current = current->next;
+    dll_node_t *next = current->next;
+    // free(current->ll);
+    ll_remove(&current->ll);
+    free(current);
+    current = next;
   }
 
-  return 0;
+  *head = NULL;
+
+  return 1;
 }
 uint8_t removeAt(size_t index, dll_t **dll) {
   if (index >= (*dll)->size) {

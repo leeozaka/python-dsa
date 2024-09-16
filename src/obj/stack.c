@@ -98,6 +98,7 @@ stack_node_t *pop(stacks_t **stack) {
   stack_node_t *node = (*stack)->top;
   (*stack)->top = node->next;
   (*stack)->size--;
+  free(node->data->value);
   free(node);
 
   return NULL;

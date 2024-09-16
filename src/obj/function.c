@@ -28,12 +28,13 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       exec = exec->next;
 
     while (strcmp(exec->ll->head->data->token, "") == 0) {
-      ll_t *ll = exec->ll;
+      ll_t *src = exec->ll;
+      ll_t *ll = ll_copy(src);
+
       for (int i = depth; i > 0; i--) {
         ll->head = ll->head->next;
       }
-      // exec->relline = f_node->relline;
-      insert(exec->ll, &body);
+      insert(ll, &body);
       exec = exec->next;
     }
   } else {
@@ -102,12 +103,18 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
             }
             stack_data.value = retval;
             stack_data.value->identity = retval->identity;
+          } else {
+            printf("variable %s not found\n",
+                   node->ll->head->next->data->token);
+            exit(EXIT_FAILURE);
           }
         } else {
           printf("return should be in a function\n");
+          exit(EXIT_FAILURE);
         }
       } else {
         printf("should return value\n");
+        exit(EXIT_FAILURE);
       }
       continue;
       break;

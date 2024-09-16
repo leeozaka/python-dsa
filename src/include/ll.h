@@ -22,9 +22,11 @@ typedef struct LL_NODE_ {
 ll_t *ll_create(size_t line);
 ll_node_t *ll_node_create(token_data_t data);
 
+ll_t *ll_copy(ll_t *ll);
+
 uint8_t ll_insert(token_data_t data, ll_t **ll);
 uint8_t ll_insertAt(token_data_t data, size_t index, ll_t **ll);
-uint8_t ll_remove(token_data_t data, ll_node_t **head);
+void ll_remove(ll_t **ll);
 uint8_t ll_removeAt(size_t index, ll_t **ll);
 
 token_data_t *ll_get(size_t index, ll_t *head);

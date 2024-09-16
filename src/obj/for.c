@@ -31,33 +31,53 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   stack_data_t for_info;
 
   stack_data.value = new_value();
+  for_info.value = new_value();
+  for_info.value->identity = V_INT;
 
-  value_t *retval = new_value();
+  // value_t *retval = new_value();
 
   // need to check if the variable is already declared
   strcpy(for_info.data, exec->ll->head->next->data->token);
 
   if (exists(for_info, *mem)) {
-    printf("variable %s already declared\n", for_info.data);
-    exit(EXIT_FAILURE);
+    assert(push(for_info, mem));
+    // printf("variable %s already declared\n", for_info.data);
+    // exit(EXIT_FAILURE);
   }
 
-  for_info.value = new_value();
-  for_info.value->identity = V_INT;
-
   if (strcmp(exec->ll->head->next->next->next->data->token, "range") == 0) {
-    for_range = atoi(exec->ll->head->next->next->next->next->data->token);
-    assert(exec->ll->head->next->next->next);
+    strcpy(stack_data.data,
+           exec->ll->head->next->next->next->next->data->token);
+    if (!exists(stack_data, *mem)) {
+      for_range = atoi(exec->ll->head->next->next->next->next->data->token);
+      assert(exec->ll->head->next->next->next);
+    } else {
+      for_range =
+          bringval(exec->ll->head->next->next->next->next->data->token, *mem)
+              ->v.i;
+    }
     for_info.value->v.i = 0;
   } else {
-    for_range = atoi(exec->ll->head->next->next->next->data->token);
-    for_info.value->v.i = 0;
+    if (debugFor)
+      printf("[debug] for range w/o range: %s\n",
+             exec->ll->head->next->next->next->data->token);
+
+    strcpy(stack_data.data, exec->ll->head->next->next->next->data->token);
+    if (exists(stack_data, *mem)) {
+      for_range =
+          bringval(exec->ll->head->next->next->next->data->token, *mem)->v.i;
+    } else {
+      printf("range should be a number\n");
+      exit(EXIT_FAILURE);
+    }
   }
   if (for_range <= 0) {
     printf("range should be greater than 0\n");
     exit(EXIT_FAILURE);
   }
   for_info.address = NULL;
+  if (debugFor)
+    printf("[debug] pushing %s to the stack\n", for_info.data);
   assert(push(for_info, mem));
 
   if (!exec->next) {
@@ -66,42 +86,49 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   }
 
   if (debugFor) {
-    printf("variable: %s\n", for_info.data);
-    printf("value: %d\n", for_info.value->v.i);
-    printf("range: %d\n", for_range);
+    printf("[debug] variable: %s\n", for_info.data);
+    printf("[debug] value: %d\n", for_info.value->v.i);
+    printf("[debug] range: %d\n", for_range);
   }
 
-  while (strcmp(exec->ll->head->data->token, "") == 0 && exec->next) {
-    ll_t *ll = exec->ll;
-    if (!depth)
-      for (int i = depth; i > 0; i--) {
-        ll->head = ll->head->next;
-      }
-    insert(exec->ll, &forBody);
-    exec = exec->next;
-  }
+  // while (strcmp(exec->ll->head->data->token, "") == 0 && exec->next) {
+  //   ll_t *ll = exec->ll;
+  //   if (!depth)
+  //     for (int i = depth; i > 0; i--) {
+  //       ll->head = ll->head->next;
+  //     }
+  //   insert(exec->ll, &forBody);
+  //   exec = exec->next;
+  // }
 
   if (debugFor)
-    printf("depth: %d\n", depth);
+    printf("[debug] depth: %d\n", depth);
 
   if (f_node) {
-    if (exec->next)
+    if (exec->next) {
+      // ll_show(exec->ll);
+      // ll_show(exec->next->ll);
       exec = exec->next;
+    }
+
     // inverted conditions here to avoid segmentation fault
     // as we need to ensure that exec exists before we try to access it
     while (exec && strcmp(exec->ll->head->data->token, "") == 0) {
-      ll_t *ll = exec->ll;
+      ll_t *src = exec->ll;
+      ll_t *dest = ll_copy(src);
+
       for (int i = depth; i > 0; i--) {
-        ll->head = ll->head->next;
+        dest->head = dest->head->next;
       }
+
       line_count++;
-      insert(exec->ll, &forBody);
+      insert(dest, &forBody);
       exec = exec->next;
     }
   }
 
   if (debugFor) {
-    printf("for body:\n");
+    printf("[debug] for body:\n");
     for (dll_node_t *node = forBody->head; node; node = node->next) {
       for (int i = 0; i < depth; i++) {
         printf("  ");
@@ -113,6 +140,21 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   while (ACTUAL_MEM_VALUE < for_range) {
     for (dll_node_t *node = forBody->head; node; node = node->next) {
       if (strcmp(node->ll->head->data->token, "for") == 0) {
+        if (debugFor) {
+          printf("\t[debug - for]\n");
+        }
+
+        size_t x = for_handler(function, mem, 1, node);
+        if (debugFor)
+          printf("[debug] lines: %zu\n", x);
+
+        for (size_t i = 0; i < x; i++) {
+          if (node->next)
+            node = node->next;
+        }
+
+        if (debugFor)
+          printf("\t[for end]\n");
         continue;
       }
 
@@ -166,9 +208,9 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
       }
 
       if (debugFor && function_find) {
-        printf("function name: %s\n",
+        printf("[debug] function name: %s\n",
                function_find->ll->head->next->data->token);
-        printf("function position: %p\n", function_find);
+        printf("[debug] function position: %p\n", function_find);
       }
 
       if (*node->ll->head->next->data->token == '=' && !function_find) {
@@ -272,15 +314,25 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
 
         // at this point we have stacked every argument
         if (debugFor)
-          printf("\n\tfunction in\n\n");
+          printf("\n[debug] \tfunction in\n\n");
         function_handler(function, mem, 1, function_find);
         if (debugFor)
-          printf("\n\tfunction returned\n\n");
+          printf("\n[debug] \tfunction returned\n\n");
       }
     }
     for_info.value->v.i++;
     replace_mem(for_info, *mem);
   }
-  // clear_stack(mem);
+  if (strcmp(peek(*mem)->data->data, for_info.data) == 0) {
+    if (debugFor) {
+      printf("memory that should be popped: %s\n", for_info.data);
+      printf("memory that is on top: %s\n", peek(*mem)->data->data);
+    }
+    pop(mem);
+  } else {
+    // TODO: should clear the stack until the variable is found
+    printf("for loop should end with the same variable\n");
+    exit(EXIT_FAILURE);
+  }
   return line_count;
 }

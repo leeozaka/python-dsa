@@ -76,3 +76,27 @@ void ll_show(ll_t *ll) {
   }
   printf("\n");
 }
+
+void ll_remove(ll_t **ll) {
+  ll_node_t *current = (*ll)->head;
+  while (current != NULL) {
+    ll_node_t *next = current->next;
+    free(current->data->token);
+    free(current->data);
+    free(current);
+    current = next;
+  }
+
+  free(ll);
+}
+
+ll_t *ll_copy(ll_t *ll) {
+  ll_t *new = ll_create(ll->relline);
+  ll_node_t *current = ll->head;
+  while (current != NULL) {
+    ll_insert(*(current->data), &new);
+    current = current->next;
+  }
+
+  return new;
+}
