@@ -5,10 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// only reason to include this is to use the segfault
-// message in win development fuck
-#include <signal.h>
-
 #include "include/data.h"
 #include "include/dll.h"
 #include "include/function.h"
@@ -18,15 +14,24 @@
 
 #define NO_DEPTH 0
 
+#ifdef _WIN64
+// only reason to include this is to use the segfault
+// message in win development fuck
+#include <signal.h>
+
 void segvHandler() {
   printf("Segmentation fault\n");
   exit(EXIT_FAILURE);
 }
+#endif
 
 int debug = 0;
 
 int main() {
+#ifdef _WIN64
   signal(SIGSEGV, segvHandler);
+  printf("teste diretiva\n");
+#endif
 
   int type;
   size_t index = 0, line_number = 0;
