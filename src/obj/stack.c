@@ -80,6 +80,7 @@ uint8_t push(stack_data_t data, stacks_t **stack) {
   if (exists(data, *stack)) {
     if (strcmp(data.data, "FCALL") != 0) {
       replace_mem(data, *stack);
+      return 1;
     }
   }
 

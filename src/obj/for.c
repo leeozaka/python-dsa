@@ -41,8 +41,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
 
   if (exists(for_info, *mem)) {
     assert(push(for_info, mem));
-    // printf("variable %s already declared\n", for_info.data);
-    // exit(EXIT_FAILURE);
   }
 
   if (strcmp(exec->ll->head->next->next->next->data->token, "range") == 0) {
@@ -100,9 +98,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   //   insert(exec->ll, &forBody);
   //   exec = exec->next;
   // }
-
-  if (debugFor)
-    printf("[debug] depth: %d\n", depth);
 
   if (f_node) {
     if (exec->next) {
@@ -330,9 +325,11 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
     }
     pop(mem);
   } else {
-    // TODO: should clear the stack until the variable is found
-    printf("for loop should end with the same variable\n");
-    exit(EXIT_FAILURE);
+    do {
+      pop(mem);
+    } while (strcmp(peek(*mem)->data->data, for_info.data) != 0);
   }
+  if (debugFor)
+    printf("[debug] line count: %zu\n", line_count);
   return line_count;
 }

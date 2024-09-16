@@ -1,5 +1,6 @@
 #include "../include/function.h"
 #include "../include/for.h"
+#include "../include/strctrl.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -104,9 +105,15 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
             stack_data.value = retval;
             stack_data.value->identity = retval->identity;
           } else {
-            printf("variable %s not found\n",
-                   node->ll->head->next->data->token);
-            exit(EXIT_FAILURE);
+            if (classifier(node->ll->head->next->data->token) == LITERAL) {
+              stack_data.value->v.i = atoi(node->ll->head->next->data->token);
+              stack_data.value->identity = V_INT;
+              retval = stack_data.value;
+            } else {
+              printf("variable %s not found\n",
+                     node->ll->head->next->data->token);
+              exit(EXIT_FAILURE);
+            }
           }
         } else {
           printf("return should be in a function\n");
@@ -290,9 +297,11 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         chicolandia_variaveis.value = ret->data->value;
         strcpy(chicolandia_variaveis.data,
                (peek(*mem))->data->address->ll->head->data->token);
+
         if (debugFunction)
           printf("chicolandia_variaveis.data: %s\n",
                  chicolandia_variaveis.data);
+
         chicolandia_variaveis.address = NULL;
         pop(mem);
         push(chicolandia_variaveis, mem);
@@ -300,12 +309,12 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       }
     }
 
-    if (flag) {
+    if (flag && depth) {
       pop(mem);
     }
 
     if (debugFunction) {
-      printf("%s", isEmpty(*mem) ? "mem is not null\n" : "mem is null\n");
+      printf("mem is empty? %d\n", isEmpty(*mem));
       if (*mem)
         memshow((*mem));
     }

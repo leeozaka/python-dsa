@@ -47,10 +47,15 @@ void print(dll_node_t *node, stacks_t *mem) {
         case 'd':
           val = bringval(printnode->data->token, mem);
 
-          if (val->identity == V_INT) {
-            fprintf(stdout, "%d", val->v.i);
+          if (val) {
+            if (val->identity == V_INT) {
+              fprintf(stdout, "%d", val->v.i);
+            } else {
+              fprintf(stdout, "%d", atoi(printnode->data->token));
+            }
           } else {
-            fprintf(stdout, "%d", atoi(printnode->data->token));
+            printf("variable %s not found\n", printnode->data->token);
+            exit(EXIT_FAILURE);
           }
 
           printc++;
@@ -76,6 +81,9 @@ void print(dll_node_t *node, stacks_t *mem) {
               fprintf(stdout, "%s", val->v.str);
               break;
             }
+          } else {
+            printf("variable %s not found\n", printnode->data->token);
+            exit(EXIT_FAILURE);
           }
 
           printc++;
