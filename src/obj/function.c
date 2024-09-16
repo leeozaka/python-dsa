@@ -93,8 +93,11 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         if (debugFunction)
           memshow(*mem);
         if (f_node != NULL) {
-          retval = bringval(node->ll->head->next->data->token, *mem);
-          if (retval) {
+          // retval = bringval(node->ll->head->next->data->token, *mem);
+          if (bringval(node->ll->head->next->data->token, *mem)) {
+            memcpy(retval, bringval(node->ll->head->next->data->token, *mem),
+                   sizeof(value_t));
+
             if (debugFunction) {
               if (retval->identity == V_STRING) {
                 printf("returning value: %s\n", retval->v.str);
@@ -102,7 +105,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
                 printf("returning value: %d\n", retval->v.i);
               }
             }
-            stack_data.value = retval;
+            strcpy(stack_data.value->v.str, retval->v.str);
             stack_data.value->identity = retval->identity;
           } else {
             if (classifier(node->ll->head->next->data->token) == LITERAL) {
@@ -123,7 +126,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         printf("should return value\n");
         exit(EXIT_FAILURE);
       }
-      continue;
+      // continue;
       break;
     }
 
@@ -264,7 +267,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       stack_node_t *ret = peek(*mem);
 
       *ret->data->value = *retval;
-      free(retval);
 
       dll_node_t *var_name = ret->data->address;
       if (debugFunction)
@@ -279,7 +281,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       }
 
       if (mem_to_return_value)
-        mem_to_return_value->data->value = ret->data->value;
+        mem_to_return_value->data->value = retval;
 
       if (debugFunction)
         printf("bring? %s\n",
@@ -294,7 +296,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       if (!mem_to_return_value &&
           !findFunction(var_name->ll->head->data->token, function)) {
         stack_data_t chicolandia_variaveis;
-        chicolandia_variaveis.value = ret->data->value;
+        chicolandia_variaveis.value = retval;
         strcpy(chicolandia_variaveis.data,
                (peek(*mem))->data->address->ll->head->data->token);
 
