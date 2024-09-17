@@ -33,6 +33,8 @@ token_data_t *ll_get(size_t index, ll_t *head);
 
 uint8_t ll_replace(token_data_t data, size_t index, ll_node_t **head);
 size_t ll_position(token_data_t data, ll_node_t **head);
+uint8_t find_operator(ll_node_t *head);
+
 
 void ll_show(ll_t *ll);
 

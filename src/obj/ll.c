@@ -1,4 +1,5 @@
 #include "../include/ll.h"
+#include "../include/strctrl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -99,4 +100,17 @@ ll_t *ll_copy(ll_t *ll) {
   }
 
   return new;
+}
+
+uint8_t find_operator(ll_node_t *head) {
+  ll_node_t *current = head;
+  while (current != NULL) {
+    if (classifier(current->data->token) == OPERATOR) {
+      return 1;
+    }
+
+    current = current->next;
+  }
+
+  return 0;
 }

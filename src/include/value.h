@@ -9,13 +9,15 @@ enum {
     V_INT,
     V_FLOAT,
     V_CHAR,
-    V_STRING
+    V_STRING,
+    V_LIST
 };
 
 typedef union uval {
   char c;
   int i;
   float f;
+  void *l;
   // actually,
   // should reallocate using
   // proper way but i'm not

@@ -57,6 +57,14 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
+
+    // if (find_operator(node->ll->head) == 1) {
+    //   if (debugFunction)
+    //     printf("found operator\n");
+    //   // find_operator  0;
+    //   continue;
+    // }
+
     if (strcmp(node->ll->head->data->token, "for") == 0) {
       if (debugFunction)
         printf("\t[for]\n");
@@ -168,8 +176,10 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
           stack_data.value->identity = V_INT;
           stack_data.value->v.i = atoi(node->ll->head->next->next->data->token);
         } else {
-          stack_data.value =
-              bringval(node->ll->head->next->next->data->token, *mem);
+          // avoiding memory leak
+          memcpy(stack_data.value,
+                 bringval(node->ll->head->next->next->data->token, *mem),
+                 sizeof(value_t));
         }
       }
 

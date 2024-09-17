@@ -31,7 +31,7 @@ int classifier(char *c) {
   case '~':
   case '<':
   case '>':
-  case '=':
+  // case '=':
   case '!':
     return OPERATOR;
   case '"':
