@@ -24,7 +24,7 @@ void segvHandler() {
 }
 #endif
 
-int debug = 1;
+int debug = 0;
 
 int main() {
 #ifdef _WIN64

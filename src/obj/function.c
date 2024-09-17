@@ -7,9 +7,7 @@
 
 #define NO_DEPTH 0
 
-#define FIRST_NODE node->ll->head->data->token
-
-int debugFunction = 0;
+int debugFunction = 1;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -59,73 +57,73 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
-    int size = 0;
-    if (find_operator(node->ll->head, &size)) {
-      printf("operator position list: ");
+    // int size = 0;
+    // if (find_operator(node->ll->head, &size)) {
+    //   printf("operator position list: ");
+    //
+    //   int *list = find_operator(node->ll->head, &size);
+    //   int *list2 = list;
+    //   printf("size: %d\n", size);
+    //
+    //   int iterator = 0;
+    //   ll_node_t *current = node->ll->head;
+    //
+    //   while (current != NULL) {
+    //     printf("%s%s%s ", current->data->token,
+    //            iterator == *list2 ? "[operator] " : "",
+    //            current->next ? "->" : "");
+    //     current = current->next;
+    //
+    //     if (iterator == *list2) {
+    //       list2++;
+    //     }
+    //
+    //     iterator++;
+    //   }
+    //
+    //   printf("\n");
+    //   continue;
+    // }
 
-      int *list = find_operator(node->ll->head, &size);
-      int *list2 = list;
-      printf("size: %d\n", size);
-
-      int iterator = 0;
-      ll_node_t *current = node->ll->head;
-
-      while (current != NULL) {
-        printf("%s%s%s ", current->data->token,
-               iterator == *list2 ? "[operator] " : "",
-               current->next ? "->" : "");
-        current = current->next;
-
-        if (iterator == *list2) {
-          list2++;
-        }
-
-        iterator++;
-      }
-
-      printf("\n");
+    if (strcmp(FIRST_NODE->data->token, "for") == 0) {
+      // if (debugFunction)
+      //   printf("\t[for]\n");
+      //
+      // size_t x = for_handler(function, mem, 1, node);
+      // if (debugFunction)
+      //   printf("lines: %zu\n", x);
+      //
+      // for (size_t i = 0; i < x; i++) {
+      //   if (node->next)
+      //     node = node->next;
+      // }
+      //
+      // if (debugFunction)
+      //   printf("\t[for end]\n");
+      printf("for unavailable\n");
       continue;
     }
 
-    if (strcmp(FIRST_NODE, "for") == 0) {
-      if (debugFunction)
-        printf("\t[for]\n");
-
-      size_t x = for_handler(function, mem, 1, node);
-      if (debugFunction)
-        printf("lines: %zu\n", x);
-
-      for (size_t i = 0; i < x; i++) {
-        if (node->next)
-          node = node->next;
-      }
-
-      if (debugFunction)
-        printf("\t[for end]\n");
-      continue;
-    }
-
-    if (strcmp(FIRST_NODE, "print") == 0) {
+    if (strcmp(FIRST_NODE->data->token, "print") == 0) {
       print(node, *mem);
       continue;
     }
 
-    if (strcmp(FIRST_NODE, "def") == 0) {
+    if (strcmp(FIRST_NODE->data->token, "def") == 0) {
       continue;
     }
 
-    if (strcmp(FIRST_NODE, "") == 0) {
+    if (strcmp(FIRST_NODE->data->token, "") == 0) {
       continue;
     }
 
-    if (strcmp(FIRST_NODE, "return") == 0) {
-      if (strcmp(node->ll->head->next->data->token, "") != 0) {
+    if (strcmp(FIRST_NODE->data->token, "return") == 0) {
+      if (strcmp(SECOND_NODE->data->token, "") != 0) {
         if (debugFunction)
           memshow(*mem);
         if (f_node != NULL) {
-          // retval = bringval(node->ll->head->next->data->token, *mem);
-          if (bringval(node->ll->head->next->data->token, *mem)) {
-            memcpy(retval, bringval(node->ll->head->next->data->token, *mem),
+          if (bringval(SECOND_NODE->data->token, *mem)) {
+            memcpy(retval, bringval(SECOND_NODE->data->token, *mem),
                    sizeof(value_t));
 
             if (debugFunction) {
@@ -138,13 +136,12 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
             strcpy(stack_data.value->v.str, retval->v.str);
             stack_data.value->identity = retval->identity;
           } else {
-            if (classifier(node->ll->head->next->data->token) == LITERAL) {
-              stack_data.value->v.i = atoi(node->ll->head->next->data->token);
+            if (classifier(SECOND_NODE->data->token) == LITERAL) {
+              stack_data.value->v.i = atoi(SECOND_NODE->data->token);
               stack_data.value->identity = V_INT;
               retval = stack_data.value;
             } else {
-              printf("variable %s not found\n",
-                     node->ll->head->next->data->token);
+              printf("variable %s not found\n", SECOND_NODE->data->token);
               exit(EXIT_FAILURE);
             }
           }
@@ -162,7 +159,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
     dll_node_t *function_find = NULL;
     if (node->ll->head->next->next) {
-      strcpy(stack_data.data, node->ll->head->next->next->data->token);
+      strcpy(stack_data.data, COMPARE(THIRD_NODE));
       function_find = findFunction(stack_data.data, function);
     }
 
@@ -171,13 +168,14 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       printf("function position: %p\n", function_find);
     }
 
-    if (*node->ll->head->next->data->token == '=' && !function_find) {
-      strcpy(stack_data.data, FIRST_NODE);
-      if (*node->ll->head->next->next->data->token == '"') {
-        char *str = (char *)malloc(
-            sizeof(char) * strlen(node->ll->head->next->next->data->token));
+    // TODO: this part isn't working properly due to parenthesis in the
+    // tokens
+    if (*COMPARE(SECOND_NODE) == '=' && !function_find) {
+      strcpy(stack_data.data, FIRST_NODE->data->token);
+      if (*COMPARE(THIRD_NODE) == '"') {
+        char *str = (char *)malloc(sizeof(char) * strlen(COMPARE(THIRD_NODE)));
 
-        strcpy(str, node->ll->head->next->next->data->token);
+        strcpy(str, COMPARE(THIRD_NODE));
 
         char *dest = (char *)malloc(strlen(str) + 1);
 
@@ -196,11 +194,10 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       } else {
         if (!exists(stack_data, *mem)) {
           stack_data.value->identity = V_INT;
-          stack_data.value->v.i = atoi(node->ll->head->next->next->data->token);
+          stack_data.value->v.i = atoi(COMPARE(THIRD_NODE));
         } else {
           // avoiding memory leak
-          memcpy(stack_data.value,
-                 bringval(node->ll->head->next->next->data->token, *mem),
+          memcpy(stack_data.value, bringval(COMPARE(THIRD_NODE), *mem),
                  sizeof(value_t));
         }
       }
@@ -216,9 +213,9 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       assert(push(stack_data, mem));
     } else {
       if (!function_find) {
-        function_find = findFunction(FIRST_NODE, function);
+        function_find = findFunction(FIRST_NODE->data->token, function);
         if (!function_find) {
-          printf("function %s not found", FIRST_NODE);
+          printf("function %s not found", FIRST_NODE->data->token);
           exit(69);
         }
       }

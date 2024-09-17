@@ -2,6 +2,7 @@
 #include "../include/dll.h"
 #include "../include/ll.h"
 #include "../include/stack.h"
+#include "../include/strctrl.h"
 #include <string.h>
 
 int printFunction = 0;
