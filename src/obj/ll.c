@@ -102,15 +102,20 @@ ll_t *ll_copy(ll_t *ll) {
   return new;
 }
 
-uint8_t find_operator(ll_node_t *head) {
+int *find_operator(ll_node_t *head, int *size) {
   ll_node_t *current = head;
+  int *operators = NULL;
+  int positions = 0;
+  *size = 0;
   while (current != NULL) {
     if (classifier(current->data->token) == OPERATOR) {
-      return 1;
+      operators = realloc(operators, (positions + 1) * sizeof(int));
+      operators[*size] = positions;
+      *size += 1;
     }
-
+    positions++;
     current = current->next;
   }
 
-  return 0;
+  return operators;
 }

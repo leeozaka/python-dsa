@@ -10,11 +10,13 @@ enum {
   KEYWORD,
   IDENTIFIER,
   OPERATOR,
-  PUNCTUATION, 
+  PUNCTUATION,
   LITERAL,
   COMMENT,
   WHITESPACE,
   NEWLINE,
+  PARENTHESIS,
+  BRACKET,
   END,
   QUOTE
 };
@@ -24,4 +26,3 @@ typedef struct TOKEN_DATA_H {
 } token_data_t;
 
 #endif
-

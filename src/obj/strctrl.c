@@ -11,8 +11,10 @@ int classifier(char *c) {
     return COMMENT;
   case '(':
   case ')':
+    return PARENTHESIS;
   case '[':
   case ']':
+    return BRACKET;
   case '{':
   case '}':
   case ',':

@@ -24,12 +24,11 @@ void segvHandler() {
 }
 #endif
 
-int debug = 0;
+int debug = 1;
 
 int main() {
 #ifdef _WIN64
   signal(SIGSEGV, segvHandler);
-  printf("teste diretiva\n");
 #endif
 
   int type;
@@ -106,9 +105,8 @@ int main() {
       continue;
     }
     dll_node_t *actual = insert(ll_create(line_number), &main);
-    // actual->relline = line_number;
 
-    while (*line) {
+    while (*line != '\0' && *line != '\n') {
       if (startsWithFourSpaces(line)) {
         strcpy(token.token, "");
         ll_insert(token, &actual->ll);
@@ -117,13 +115,25 @@ int main() {
       }
 
       type = classifier(line);
+      if (type == BRACKET || type == PARENTHESIS) {
+        token_text[index++] = *line;
+        token_text[index] = '\0';
+        line++;
+        strcpy(token.token, token_text);
+        ll_insert(token, &actual->ll);
+        memset(token_text, 0, sizeof(token_text));
+        index = 0;
+        continue;
+      }
+
       if (type == WHITESPACE || type == PUNCTUATION) {
         line++;
         continue;
       }
 
       if (type != QUOTE)
-        while (type != WHITESPACE && type != PUNCTUATION && type != NEWLINE) {
+        while (type != WHITESPACE && type != PUNCTUATION && type != NEWLINE &&
+               type != COMMENT && type != BRACKET && type != PARENTHESIS) {
           token_text[index++] = *line;
           line++;
 
@@ -147,9 +157,9 @@ int main() {
       memset(token_text, 0, sizeof(token_text));
       index = 0;
 
-      if (*(line + 1) != '\n') {
-        line++;
-      }
+      // if (*(line + 1) != '\n') {
+      //   line++;
+      // }
     }
   }
 

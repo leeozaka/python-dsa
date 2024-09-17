@@ -1,20 +1,23 @@
 #ifndef GLL_H
 #define GLL_H
 
+#include "data.h"
 #include "value.h"
+#include <stdint.h>
+
+enum { LIST, ATOM };
 
 struct reg_lista {
-  struct listagen *cabeca;
-  struct listagen *cauda;
+  struct list *head;
+  struct list *tail;
 };
 
 union info_lista {
-  // char info[8];
   value_t *info;
   struct reg_lista lista;
 };
 
-typedef struct lgen {
+typedef struct list {
   uint8_t type;
   union info_lista no;
 } gll_t;

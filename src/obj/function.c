@@ -7,6 +7,8 @@
 
 #define NO_DEPTH 0
 
+#define FIRST_NODE node->ll->head->data->token
+
 int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
@@ -57,15 +59,35 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
+    int size = 0;
+    if (find_operator(node->ll->head, &size)) {
+      printf("operator position list: ");
 
-    // if (find_operator(node->ll->head) == 1) {
-    //   if (debugFunction)
-    //     printf("found operator\n");
-    //   // find_operator  0;
-    //   continue;
-    // }
+      int *list = find_operator(node->ll->head, &size);
+      int *list2 = list;
+      printf("size: %d\n", size);
 
-    if (strcmp(node->ll->head->data->token, "for") == 0) {
+      int iterator = 0;
+      ll_node_t *current = node->ll->head;
+
+      while (current != NULL) {
+        printf("%s%s%s ", current->data->token,
+               iterator == *list2 ? "[operator] " : "",
+               current->next ? "->" : "");
+        current = current->next;
+
+        if (iterator == *list2) {
+          list2++;
+        }
+
+        iterator++;
+      }
+
+      printf("\n");
+      continue;
+    }
+
+    if (strcmp(FIRST_NODE, "for") == 0) {
       if (debugFunction)
         printf("\t[for]\n");
 
@@ -83,20 +105,20 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       continue;
     }
 
-    if (strcmp(node->ll->head->data->token, "print") == 0) {
+    if (strcmp(FIRST_NODE, "print") == 0) {
       print(node, *mem);
       continue;
     }
 
-    if (strcmp(node->ll->head->data->token, "def") == 0) {
+    if (strcmp(FIRST_NODE, "def") == 0) {
       continue;
     }
 
-    if (strcmp(node->ll->head->data->token, "") == 0) {
+    if (strcmp(FIRST_NODE, "") == 0) {
       continue;
     }
 
-    if (strcmp(node->ll->head->data->token, "return") == 0) {
+    if (strcmp(FIRST_NODE, "return") == 0) {
       if (strcmp(node->ll->head->next->data->token, "") != 0) {
         if (debugFunction)
           memshow(*mem);
@@ -150,7 +172,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
 
     if (*node->ll->head->next->data->token == '=' && !function_find) {
-      strcpy(stack_data.data, node->ll->head->data->token);
+      strcpy(stack_data.data, FIRST_NODE);
       if (*node->ll->head->next->next->data->token == '"') {
         char *str = (char *)malloc(
             sizeof(char) * strlen(node->ll->head->next->next->data->token));
@@ -194,9 +216,9 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       assert(push(stack_data, mem));
     } else {
       if (!function_find) {
-        function_find = findFunction(node->ll->head->data->token, function);
+        function_find = findFunction(FIRST_NODE, function);
         if (!function_find) {
-          printf("function %s not found", node->ll->head->data->token);
+          printf("function %s not found", FIRST_NODE);
           exit(69);
         }
       }
