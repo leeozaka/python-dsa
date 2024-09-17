@@ -5,13 +5,13 @@
 #include "../include/strctrl.h"
 #include <string.h>
 
-int printFunction = 0;
+int printFunction = 1;
 
 void print(dll_node_t *node, stacks_t *mem) {
   value_t *val = new_value();
-  if (*node->ll->head->next->data->token == '"') {
-    ll_node_t *printnode = node->ll->head->next;
-    char *printstr = node->ll->head->next->data->token;
+  if (*node->ll->head->next->next->data->token == '"') {
+    ll_node_t *printnode = THIRD_NODE;
+    char *printstr = COMPARE(THIRD_NODE);
     char *printc;
     // int i = 0;
 
@@ -96,8 +96,9 @@ void print(dll_node_t *node, stacks_t *mem) {
       }
     }
   } else {
-    while (strcmp(node->ll->head->next->data->token, "") != 0) {
-      val = bringval(node->ll->head->next->data->token, mem);
+    ll_node_t *printnode = node->ll->head->next->next;
+    while (strcmp(printnode->data->token, ")") != 0) {
+      val = bringval(printnode->data->token, mem);
       if (val) {
         switch (val->identity) {
         case V_INT:
@@ -108,9 +109,9 @@ void print(dll_node_t *node, stacks_t *mem) {
           break;
         }
       } else {
-        fprintf(stdout, "%s", node->ll->head->next->data->token);
+        fprintf(stdout, "%s", printnode->data->token);
       }
-      node->ll->head->next = node->ll->head->next->next;
+      printnode = printnode->next;
     }
     printf("\n");
   }
