@@ -4,6 +4,7 @@
 #define FIRST_NODE node->ll->head
 #define SECOND_NODE node->ll->head->next
 #define THIRD_NODE node->ll->head->next->next
+#define FOURTH_NODE node->ll->head->next->next->next
 
 #define COMPARE(NODE)                                                          \
   (strcmp(NODE->data->token, "(") == 0 ? NODE->next->data->token               \

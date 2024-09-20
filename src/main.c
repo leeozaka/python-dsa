@@ -46,9 +46,9 @@ int main() {
 
   // allocate memory for up to 100 files
   // but problably you will not have 100 files in the directory lol
-  char **files = (char **)malloc(100 * sizeof(char *));
+  char **files = (char **)calloc(100, sizeof(char *));
   for (int i = 0; i < 100; i++) {
-    files[i] = (char *)malloc(100 * sizeof(char));
+    files[i] = (char *)calloc(100, sizeof(char));
   }
 
   // unsigned because we are not going to have negative files

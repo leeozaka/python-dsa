@@ -119,20 +119,20 @@ size_t stack_size(stacks_t *stack) { return stack->size; }
 
 void memshow(stacks_t *stack) {
   stack_node_t *node = stack->top;
-  printf("Stack size: %zu\n", stack->size);
-  printf("Data - Type - Value - Address \n");
+  fprintf(stdout, "Stack size: %zu\n", stack->size);
+  fprintf(stdout, "Data - Type - Value - Address \n");
 
   while (node) {
     if (node->data->value->identity == V_INT) {
-      printf("%s %s %d %p\n", node->data->data, "INT", node->data->value->v.i,
-             node->data->address);
+      fprintf(stdout, "%s %s %d %p\n", node->data->data, "INT",
+              node->data->value->v.i, node->data->address);
     }
     if (node->data->value->identity == V_STRING) {
-      printf("%s %s \"%s\" %p\n", node->data->data, "STR",
-             node->data->value->v.str, node->data->address);
+      fprintf(stdout, "%s %s \"%s\" %p\n", node->data->data, "STR",
+              node->data->value->v.str, node->data->address);
     }
     if (node->data->value->identity == V_NULL) {
-      printf("%s %s %d %p\n", node->data->data, "NULL", node->data->value->v.i,
+      fprintf(stdout, "%s %s %d %p\n", node->data->data, "NULL", node->data->value->v.i,
              node->data->address);
     }
 

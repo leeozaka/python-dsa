@@ -5,36 +5,43 @@
 #include "../include/strctrl.h"
 #include <string.h>
 
-int printFunction = 1;
+int printFunction = 0;
 
 void print(dll_node_t *node, stacks_t *mem) {
   value_t *val = new_value();
-  if (*node->ll->head->next->next->data->token == '"') {
+  if (*THIRD_NODE->data->token == '"') {
     ll_node_t *printnode = THIRD_NODE;
-    char *printstr = COMPARE(THIRD_NODE);
+    char *printstr = THIRD_NODE->data->token;
     char *printc;
     // int i = 0;
 
-    uint8_t percent = 0, empty = 0;
+    uint8_t percent = 0;
 
     percent = *printnode->data->token == '%';
-    empty = *printnode->data->token == '\0';
+    // empty = *printnode->data->token == '\0';
 
-    while (printnode && !percent && !empty) {
-      if (!printnode) {
-        perror("invalid print statement 1");
-        exit(69);
+    // while (printnode && !percent) {
+    //   if (!printnode) {
+    //     perror("invalid print statement 1");
+    //     exit(69);
+    //   }
+    //   printnode = printnode->next;
+    //     percent = *printnode->data->token == '%';
+    // }
+
+    while (printnode) {
+      if (*printnode->data->token == '%') {
+          break;
       }
-
       printnode = printnode->next;
-      percent = *printnode->data->token == '%';
-      empty = *printnode->data->token == '\0';
     }
 
-    printnode = printnode->next;
+    if (printnode)
+      printnode = printnode->next;
 
-    if (printFunction)
-      printf("printnode: %s\n", printnode->data->token);
+    // if (printFunction) {
+    //   printf("printnode: %s\n", printnode->data->token);
+    // }
 
     for (printc = (char *)printstr; *printc != '\0';) {
       while (*printc != '%' && *printc != '\0' && *printc != '"' &&
