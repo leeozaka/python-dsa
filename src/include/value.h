@@ -1,17 +1,11 @@
 #ifndef VALUE_H
 #define VALUE_H
 
+#include <stdint.h>
 #include <stdlib.h>
 #define STR_SIZE 256
 
-enum {
-    V_NULL,
-    V_INT,
-    V_FLOAT,
-    V_CHAR,
-    V_STRING,
-    V_LIST
-};
+enum { V_NULL, V_INT, V_FLOAT, V_CHAR, V_STRING, V_LIST };
 
 typedef union uval {
   char c;
@@ -31,8 +25,8 @@ typedef struct _value {
   u_value v;
 } value_t;
 
-
-value_t* new_value();
+value_t *new_value();
 u_value new_value_context();
+uint8_t isInt(const char *str);
 
 #endif

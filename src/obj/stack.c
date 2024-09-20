@@ -131,9 +131,13 @@ void memshow(stacks_t *stack) {
       fprintf(stdout, "%s %s \"%s\" %p\n", node->data->data, "STR",
               node->data->value->v.str, node->data->address);
     }
+    if (node->data->value->identity == V_FLOAT) {
+      fprintf(stdout, "%s %s %f %p\n", node->data->data, "FLOAT",
+              node->data->value->v.f, node->data->address);
+    }
     if (node->data->value->identity == V_NULL) {
-      fprintf(stdout, "%s %s %d %p\n", node->data->data, "NULL", node->data->value->v.i,
-             node->data->address);
+      fprintf(stdout, "%s %s %d %p\n", node->data->data, "NULL",
+              node->data->value->v.i, node->data->address);
     }
 
     node = node->next;

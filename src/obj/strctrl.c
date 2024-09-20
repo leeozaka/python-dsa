@@ -19,14 +19,15 @@ int classifier(char *c) {
   case '}':
   case ',':
   case ':':
-  case '.':
   case ';':
     return PUNCTUATION;
+  case '.':
+    return DOT;
   case '+':
   case '-':
   case '*':
   case '/':
-  case '%':
+  // case '%':
   case '&':
   case '|':
   case '^':

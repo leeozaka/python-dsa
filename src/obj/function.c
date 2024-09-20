@@ -56,33 +56,33 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
-    // int size = 0;
-    // if (find_operator(node->ll->head, &size)) {
-    //   printf("operator position list: ");
-    //
-    //   int *list = find_operator(node->ll->head, &size);
-    //   int *list2 = list;
-    //   printf("size: %d\n", size);
-    //
-    //   int iterator = 0;
-    //   ll_node_t *current = node->ll->head;
-    //
-    //   while (current != NULL) {
-    //     printf("%s%s%s ", current->data->token,
-    //            iterator == *list2 ? "[operator] " : "",
-    //            current->next ? "->" : "");
-    //     current = current->next;
-    //
-    //     if (iterator == *list2) {
-    //       list2++;
-    //     }
-    //
-    //     iterator++;
-    //   }
-    //
-    //   printf("\n");
-    //   continue;
-    // }
+    int size = 0;
+    if (find_operator(node->ll->head, &size)) {
+      printf("operator position list: ");
+
+      int *list = find_operator(node->ll->head, &size);
+      int *list2 = list;
+      printf("size: %d\n", size);
+
+      int iterator = 0;
+      ll_node_t *current = node->ll->head;
+
+      while (current != NULL) {
+        printf("%s%s%s ", current->data->token,
+               iterator == *list2 ? "[operator] " : "",
+               current->next ? "->" : "");
+        current = current->next;
+
+        if (iterator == *list2) {
+          list2++;
+        }
+
+        iterator++;
+      }
+
+      printf("\n");
+      continue;
+    }
 
     if (strcmp(FIRST_NODE->data->token, "for") == 0) {
       if (debugFunction)
@@ -99,8 +99,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
       if (debugFunction)
         printf("\t[for end]\n");
-      // printf("for unavailable\n");
-      // exit(EXIT_FAILURE);
       continue;
     }
 
@@ -193,8 +191,13 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
         strcpy(stack_data.value->v.str, dest);
       } else {
         if (!exists(stack_data, *mem)) {
-          stack_data.value->identity = V_INT;
-          stack_data.value->v.i = atoi(COMPARE(THIRD_NODE));
+          if (isInt(THIRD_NODE->data->token)) {
+            stack_data.value->identity = V_INT;
+            stack_data.value->v.i = atoi(COMPARE(THIRD_NODE));
+          } else {
+            stack_data.value->identity = V_FLOAT;
+            stack_data.value->v.f = atof(COMPARE(THIRD_NODE));
+          }
         } else {
           // avoiding memory leak
           memcpy(stack_data.value, bringval(THIRD_NODE->data->token, *mem),

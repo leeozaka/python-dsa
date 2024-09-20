@@ -69,10 +69,28 @@ void print(dll_node_t *node, stacks_t *mem) {
           printc++;
           printnode = printnode->next;
           break;
+
         case 'n':
           fprintf(stdout, "\n");
           printc++;
+          break;
 
+        case 'f':
+          val = bringval(printnode->data->token, mem);
+
+          if (val) {
+            if (val->identity == V_FLOAT) {
+              fprintf(stdout, "%f", val->v.f);
+            } else {
+              fprintf(stdout, "%f", atof(printnode->data->token));
+            }
+          } else {
+            printf("variable %s not found\n", printnode->data->token);
+            exit(EXIT_FAILURE);
+          }
+
+          printc++;
+          printnode = printnode->next;
           break;
 
         case 's':
@@ -84,6 +102,9 @@ void print(dll_node_t *node, stacks_t *mem) {
             switch (val->identity) {
             case V_INT:
               fprintf(stdout, "%d", val->v.i);
+              break;
+            case V_FLOAT:
+              fprintf(stdout, "%f", val->v.f);
               break;
             case V_STRING:
               fprintf(stdout, "%s", val->v.str);
@@ -110,6 +131,9 @@ void print(dll_node_t *node, stacks_t *mem) {
         switch (val->identity) {
         case V_INT:
           fprintf(stdout, "%d ", val->v.i);
+          break;
+        case V_FLOAT:
+          fprintf(stdout, "%f ", val->v.f);
           break;
         case V_STRING:
           fprintf(stdout, "%s", val->v.str);
