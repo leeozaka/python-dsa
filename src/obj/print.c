@@ -31,7 +31,7 @@ void print(dll_node_t *node, stacks_t *mem) {
 
     while (printnode) {
       if (*printnode->data->token == '%') {
-          break;
+        break;
       }
       printnode = printnode->next;
     }
