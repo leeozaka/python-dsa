@@ -40,6 +40,7 @@ size_t stack_size(stacks_t *stack);
 value_t *bringval(const char *var, stacks_t *stack);
 void memshow(stacks_t *stack);
 uint8_t exists(stack_data_t data, stacks_t *stack);
+uint8_t existsvar(const char *var, stacks_t *stack);
 
 void clear_stack(stacks_t **stack);
 

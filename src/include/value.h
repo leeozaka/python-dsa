@@ -1,17 +1,21 @@
 #ifndef VALUE_H
 #define VALUE_H
 
+#include <ctype.h>
+#include <string.h>
+
 #include <stdint.h>
 #include <stdlib.h>
+
 #define STR_SIZE 256
 
-enum { V_NULL, V_INT, V_FLOAT, V_CHAR, V_STRING, V_LIST };
+enum { V_NULL, V_INT, V_FLOAT, V_CHAR, V_STRING, V_LIST, V_OPERATOR };
 
 typedef union uval {
   char c;
   int i;
   float f;
-  void *l;
+  // void *l;
   // actually,
   // should reallocate using
   // proper way but i'm not
@@ -21,7 +25,6 @@ typedef union uval {
 
 typedef struct _value {
   char identity;
-  // going to play with some pointer arithimetics
   u_value v;
 } value_t;
 

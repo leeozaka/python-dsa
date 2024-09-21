@@ -29,11 +29,11 @@ uint8_t ll_insertAt(token_data_t data, size_t index, ll_t **ll);
 void ll_remove(ll_t **ll);
 uint8_t ll_removeAt(size_t index, ll_t **ll);
 
-token_data_t *ll_get(size_t index, ll_t *head);
+ll_node_t *ll_get(ll_node_t *head, size_t index);
 
 uint8_t ll_replace(token_data_t data, size_t index, ll_node_t **head);
 size_t ll_position(token_data_t data, ll_node_t **head);
-int *find_operator(ll_node_t *head, int *size);
+ll_node_t *find_operator(ll_node_t *head);
 
 void ll_show(ll_t *ll);
 

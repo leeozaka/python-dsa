@@ -156,10 +156,6 @@ int main() {
 
       memset(token_text, 0, sizeof(token_text));
       index = 0;
-
-      // if (*(line + 1) != '\n') {
-      //   line++;
-      // }
     }
   }
 

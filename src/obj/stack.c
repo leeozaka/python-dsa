@@ -153,3 +153,14 @@ void clear_stack(stacks_t **stack) {
     pop(stack);
   }
 }
+
+uint8_t existsvar(const char *var, stacks_t *stack) {
+  stack_node_t *node = stack->top;
+  while (node) {
+    if (strcmp(node->data->data, var) == 0) {
+      return 1;
+    }
+    node = node->next;
+  }
+  return 0;
+}

@@ -3,35 +3,12 @@
 
 #include "data.h"
 #include "ll.h"
+#include "stack.h"
 #include "value.h"
 #include <stdint.h>
 
-enum { LIST, ATOM };
-
-struct reg_lista {
-  struct list *head;
-  struct list *tail;
-};
-
-union info_lista {
-  value_t *info;
-  struct reg_lista lista;
-};
-
-// typedef struct list {
-//   uint8_t type;
-//   union info_lista no;
-// } gll_t;
-
-union info {
-  float value;
-  char op[3];
-  char func[20];
-};
-
 typedef struct listagen {
   uint8_t type;
-  union info info;
   value_t *value;
   struct listagen *head, *tail;
 } gll_t;
@@ -46,24 +23,35 @@ typedef struct lg_queue {
   struct lg_queue *next;
 } gll_q_t;
 
+// actually,
+// would be better a union
+// of stacks but i have no time
+typedef struct value_stack {
+  value_t *value;
+  struct value_stack *next;
+} value_s_t;
+
+gll_t *criaH();
 gll_t *criaT(value_t *info);
-gll_t *cons(gll_t *H, gll_t *T);
 
 gll_s_t *init_gll_s();
 gll_q_t *init_gll_q();
 
+void push_gll_stack(gll_s_t **s, gll_t *gll);
+int gll_s_isEmpty(gll_s_t *s);
+gll_t *pop_gll_stack(gll_s_t **s);
+
+void value_push(value_s_t **s, value_t *value);
+void value_pop(value_s_t **s);
+
+void enqueue(gll_q_t **q, gll_t *gll);
+gll_t *dequeue(gll_q_t **q);
+int gll_q_isEmpty(gll_q_t *q);
+
 uint8_t isNull(gll_t *L);
-uint8_t isAtom(gll_t *L);
 
-gll_t *head(gll_t *L);
-gll_t *tail(gll_t *L);
-
-value_t retexpr(ll_node_t *ll);
-
-void show(gll_t *L);
-void showAtom(gll_t *L);
-void list_delete(gll_t **L);
-void duplicate(gll_t *L);
+value_t *retexpr(ll_node_t *ll, stacks_t *mem);
+value_t *calcexpr(gll_t *L);
 
 uint8_t isEqual(gll_t *L1, gll_t *L2);
 

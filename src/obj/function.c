@@ -1,5 +1,6 @@
 #include "../include/function.h"
 #include "../include/for.h"
+#include "../include/gll.h"
 #include "../include/strctrl.h"
 #include <assert.h>
 #include <stdio.h>
@@ -7,7 +8,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 0;
+int debugFunction = 1;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -56,31 +57,13 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
-    int size = 0;
-    if (find_operator(node->ll->head, &size)) {
-      printf("operator position list: ");
+    ll_node_t *operator= find_operator(node->ll->head);
+    if (operator) {
+      value_t *value = retexpr(operator, * mem);
+      printf("result of expression = %d\n", value->v.i);
 
-      int *list = find_operator(node->ll->head, &size);
-      int *list2 = list;
-      printf("size: %d\n", size);
-
-      int iterator = 0;
-      ll_node_t *current = node->ll->head;
-
-      while (current != NULL) {
-        printf("%s%s%s ", current->data->token,
-               iterator == *list2 ? "[operator] " : "",
-               current->next ? "->" : "");
-        current = current->next;
-
-        if (iterator == *list2) {
-          list2++;
-        }
-
-        iterator++;
-      }
-
-      printf("\n");
+      printf(" exiting\n");
+      exit(EXIT_SUCCESS);
       continue;
     }
 

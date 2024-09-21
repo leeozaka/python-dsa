@@ -1,6 +1,5 @@
 #include "../include/value.h"
-#include <ctype.h>
-#include <string.h>
+#include "../include/strctrl.h"
 
 value_t *new_value() {
   value_t *n = (value_t *)calloc(1, sizeof(value_t));
@@ -14,19 +13,25 @@ u_value new_value_context() {
   return *v;
 }
 
-value_t *new_value_infer_type(char * str) {
-    value_t *n = new_value();
+value_t *new_value_infer_type(char *str) {
+  value_t *n = new_value();
 
-    if (*str == '"') {
-        // logic to strings here
-        return NULL;
-    }
-    else if (isInt(str)) {
-        n->identity = V_INT;
-        n->v.i = atoi(str);
-    }
+  if (*str == '"') {
+    exit(EXIT_FAILURE);
+  }
 
-    return n;
+  if (classifier(str) == OPERATOR) {
+    n->identity = V_OPERATOR;
+    strcpy(n->v.str, str);
+  } else if (isInt(str)) {
+    n->identity = V_INT;
+    n->v.i = atoi(str);
+  } else {
+    n->identity = V_FLOAT;
+    n->v.f = atof(str);
+  }
+
+  return n;
 }
 
 uint8_t isInt(const char *str) {

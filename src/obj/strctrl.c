@@ -1,6 +1,12 @@
 #include "../include/strctrl.h"
 
 int classifier(char *c) {
+  if (strcmp(c, "**") == 0) {
+    return OPERATOR;
+  }
+  if (strcmp(c, "//") == 0) {
+    return OPERATOR;
+  }
   switch (*c) {
   case ' ':
   case '\t':
@@ -28,12 +34,12 @@ int classifier(char *c) {
   case '*':
   case '/':
   // case '%':
-  case '&':
-  case '|':
-  case '^':
-  case '~':
-  case '<':
-  case '>':
+  // case '&':
+  // case '|':
+  // case '^':
+  // case '~':
+  // case '<':
+  // case '>':
   // case '=':
   case '!':
     return OPERATOR;

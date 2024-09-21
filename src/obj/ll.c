@@ -22,17 +22,30 @@ ll_node_t *ll_node_create(token_data_t data) {
   return new;
 }
 
-token_data_t *ll_get(size_t index, ll_t *ll) {
-  if (index >= ll->size) {
-    return NULL;
+// ll_node_t *ll_get(size_t index, ll_node_t *ll) {
+//   if (index >= ll->size) {
+//     return NULL;
+//   }
+//
+//   ll_node_t *current = ll->head;
+//   for (size_t i = 0; i < index; i++) {
+//     current = current->next;
+//   }
+//
+//   return current->data;
+// }
+
+ll_node_t *ll_get(ll_node_t *head, size_t index) {
+  if (index == 0) {
+    return head;
   }
 
-  ll_node_t *current = ll->head;
+  ll_node_t *current = head;
   for (size_t i = 0; i < index; i++) {
     current = current->next;
   }
 
-  return current->data;
+  return current;
 }
 
 uint8_t ll_insert(token_data_t data, ll_t **ll) {
@@ -102,13 +115,18 @@ ll_t *ll_copy(ll_t *ll) {
   return new;
 }
 
-int *find_operator(ll_node_t *head, int *size) {
+// TODO: failing to handle parenthesis
+ll_node_t *find_operator(ll_node_t *head) {
+  ll_t *expression = ll_create(0);
+
   ll_node_t *current = head;
   int *operators = NULL;
   int positions = 0;
-  *size = 0;
+  int *size = calloc(1, sizeof(int));
+
   while (current != NULL) {
     if (classifier(current->data->token) == OPERATOR) {
+
       operators = realloc(operators, (positions + 1) * sizeof(int));
       operators[*size] = positions;
       *size += 1;
@@ -117,5 +135,34 @@ int *find_operator(ll_node_t *head, int *size) {
     current = current->next;
   }
 
-  return operators;
+  if (*size == 0) {
+    return NULL;
+  }
+
+  int i = 0;
+  int pos = operators[0];
+
+  ll_insert(*(ll_get(head, pos - 1)->data), &expression);
+  while (i < *size) {
+    if (!ll_get(head, pos + 1)) {
+      printf("Invalid expression\n");
+      exit(EXIT_FAILURE);
+    }
+    if (strcmp(ll_get(head, pos)->data->token, ")") == 0) {
+      printf("Invalid expression\n");
+      exit(EXIT_FAILURE);
+    }
+
+    ll_insert(*(ll_get(head, pos)->data), &expression);
+    ll_insert(*(ll_get(head, pos + 1)->data), &expression);
+    i++;
+    pos = operators[i];
+  }
+
+  expression->relline = (operators[0]) - 1;
+
+  free(operators);
+  free(size);
+
+  return expression->head;
 }
