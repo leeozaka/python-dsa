@@ -15,9 +15,6 @@ void print(dll_node_t *node, stacks_t *mem) {
     char *printc;
     // int i = 0;
 
-    uint8_t percent = 0;
-
-    percent = *printnode->data->token == '%';
     // empty = *printnode->data->token == '\0';
 
     // while (printnode && !percent) {

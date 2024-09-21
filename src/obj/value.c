@@ -14,6 +14,21 @@ u_value new_value_context() {
   return *v;
 }
 
+value_t *new_value_infer_type(char * str) {
+    value_t *n = new_value();
+
+    if (*str == '"') {
+        // logic to strings here
+        return NULL;
+    }
+    else if (isInt(str)) {
+        n->identity = V_INT;
+        n->v.i = atoi(str);
+    }
+
+    return n;
+}
+
 uint8_t isInt(const char *str) {
   for (size_t i = 0; i < strlen(str); i++) {
     if (!isdigit(str[i])) {

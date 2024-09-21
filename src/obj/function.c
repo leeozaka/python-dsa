@@ -116,7 +116,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
 
     if (strcmp(FIRST_NODE->data->token, "return") == 0) {
-      printf("return");
       if (strcmp(SECOND_NODE->data->token, "") != 0) {
         if (debugFunction)
           memshow(*mem);

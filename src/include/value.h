@@ -27,6 +27,7 @@ typedef struct _value {
 
 value_t *new_value();
 u_value new_value_context();
+value_t *new_value_infer_type(char *str);
 uint8_t isInt(const char *str);
 
 #endif
