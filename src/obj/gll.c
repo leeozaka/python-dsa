@@ -134,6 +134,12 @@ value_t *calcexpr(gll_t *L) {
       continue;
     }
 
+    if (L->value->identity == V_INT || L->value->identity == V_FLOAT) {
+      value_push(&val, L->value);
+      L = L->tail;
+      continue;
+    }
+
     if (L->value->identity == V_OPERATOR) {
       value_push(&op, L->value);
       L = L->tail;
@@ -150,8 +156,9 @@ value_t *calcexpr(gll_t *L) {
         if (value->identity == V_NULL) {
           value->identity = val->value->identity;
           value->v.i = val->value->v.i;
+          value_push(&val, L->value);
         } else {
-          value_push(&val, value);
+          value_push(&val, L->value);
         }
 
         if (value->identity == V_INT || value->identity == V_FLOAT) {
@@ -196,7 +203,6 @@ value_t *calcexpr(gll_t *L) {
     }
   }
 
-  printf("resulting in: %d\n", value->v.i);
   return value;
 }
 
