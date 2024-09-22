@@ -251,7 +251,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
             stack_data.value->v.i = atoi(THIRD_NODE->data->token);
           } else {
             stack_data.value = bringval(FIRST_NODE->data->token, *mem);
-            printf("hit");
           }
         }
 

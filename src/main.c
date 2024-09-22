@@ -37,7 +37,7 @@ int main() {
   token_data_t token;
 
   struct dirent *entry;
-  const char *directory_path = "./";
+  const char *directory_path = "./examples/";
   DIR *dir = opendir(directory_path);
 
   if (dir == NULL) {
@@ -74,7 +74,9 @@ int main() {
 
   FILE *stream;
   if (file_number <= files_count && file_number > 0) {
-    stream = fopen(files[file_number - 1], "r");
+    char *file_path = (char *)calloc(50, sizeof(char));
+    sprintf(file_path, "%s%s", directory_path, files[file_number - 1]);
+    stream = fopen(file_path, "r");
     assert(stream);
     if (debug)
       printf("Running %s\n", files[file_number - 1]);

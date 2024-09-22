@@ -139,7 +139,6 @@ ll_t *find_operator(ll_node_t *head) {
     current = current->next;
   }
 
-  int i = 0;
   current = head;
   while (current) {
     if (classifier(current->data->token) == OPERATOR)
