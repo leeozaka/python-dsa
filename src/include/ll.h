@@ -2,6 +2,7 @@
 #define LL_H
 
 #include "data.h"
+#include "value.h"
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -34,6 +35,8 @@ ll_node_t *ll_get(ll_node_t *head, size_t index);
 uint8_t ll_replace(token_data_t data, size_t index, ll_node_t **head);
 size_t ll_position(token_data_t data, ll_node_t **head);
 ll_t *find_operator(ll_node_t *head);
+uint8_t clean_operator(ll_node_t *op_head, value_t *value,
+                       ll_node_t **dest_node);
 
 void ll_show(ll_t *ll);
 

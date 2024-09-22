@@ -183,3 +183,34 @@ ll_t *find_operator(ll_node_t *head) {
 
   return expression;
 }
+
+uint8_t clean_operator(ll_node_t *src_node, value_t *value,
+                       ll_node_t **dest_node) {
+  char *str = calloc(STRSIZE, sizeof(char));
+
+  if (value->identity == V_INT)
+    sprintf(str, "%d", value->v.i);
+  if (value->identity == V_FLOAT)
+    sprintf(str, "%f", value->v.f);
+  if (value->identity == V_STRING)
+    sprintf(str, "%s", value->v.str);
+
+  // printf("first token: %s\n", src_node->data->token);
+
+  ll_node_t *dest_head = *dest_node;
+  while (strcmp(dest_head->data->token, src_node->data->token) != 0) {
+    dest_head = dest_head->next;
+  }
+
+  while (src_node->next) {
+    // ll_node_t *temp = &(*dest_head);
+    *dest_head = *dest_head->next;
+    // free(temp);
+
+    // printf("src_node->data->token: %s\n", src_node->data->token);
+    src_node = src_node->next;
+  }
+
+  strcpy(dest_head->data->token, str);
+  return 1;
+}

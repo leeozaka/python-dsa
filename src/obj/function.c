@@ -24,6 +24,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
   stack_data.value = new_value();
 
   value_t *retval = new_value();
+  uint8_t rebuild_flag = 0;
 
   if (f_node) {
     if (exec->next)
@@ -55,21 +56,27 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
   }
 
+  ll_t *original = NULL;
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
-    // ll_node_t *operator= find_operator(node->ll->head);
+    if (strcmp(FIRST_NODE->data->token, "def") == 0) {
+      continue;
+    }
+
+    if (strcmp(FIRST_NODE->data->token, "") == 0) {
+      continue;
+    }
 
     // using the full list type because operator contains the first
     // element found inside the original list
     ll_t *operator= find_operator(node->ll->head);
-    if (operator) {
-      ll_show(operator);
-      value_t *value = retexpr(operator->head, *mem);
-      printf("result of expression = %d\n", value->v.i);
 
-      printf(" exiting\n");
-      exit(EXIT_SUCCESS);
-      continue;
+    if (operator) {
+
+      original = ll_copy(node->ll);
+
+      value_t *value = retexpr(operator->head, *mem);
+      clean_operator(operator->head, value, &node->ll->head);
     }
 
     if (strcmp(FIRST_NODE->data->token, "for") == 0) {
@@ -92,14 +99,6 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
     if (strcmp(FIRST_NODE->data->token, "print") == 0) {
       print(node, *mem);
-      continue;
-    }
-
-    if (strcmp(FIRST_NODE->data->token, "def") == 0) {
-      continue;
-    }
-
-    if (strcmp(FIRST_NODE->data->token, "") == 0) {
       continue;
     }
 
@@ -285,6 +284,11 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       function_handler(function, mem, 1, function_find);
       if (debugFunction)
         printf("\n\tfunction returned\n\n");
+    }
+    if (rebuild_flag) {
+      // node->original;
+      node->ll = original;
+      rebuild_flag = 0;
     }
   }
 

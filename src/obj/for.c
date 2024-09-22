@@ -1,5 +1,6 @@
 #include "../include/for.h"
 #include "../include/function.h"
+#include "../include/gll.h"
 #include "../include/strctrl.h"
 #include <assert.h>
 #include <stdio.h>
@@ -23,6 +24,7 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   }
 
   size_t line_count = 0;
+  uint8_t rebuild_flag = 0;
   int for_range = 0;
 
   forBody = dll_create();
@@ -48,7 +50,8 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
     strcpy(stack_data.data,
            exec->ll->head->next->next->next->next->next->data->token);
     if (!exists(stack_data, *mem)) {
-      for_range = atoi(exec->ll->head->next->next->next->next->data->token);
+      for_range =
+          atoi(exec->ll->head->next->next->next->next->next->data->token);
       assert(exec->ll->head->next->next->next);
     } else {
       for_range =
@@ -91,20 +94,8 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
     printf("[debug] range: %d\n", for_range);
   }
 
-  // while (strcmp(exec->ll->head->data->token, "") == 0 && exec->next) {
-  //   ll_t *ll = exec->ll;
-  //   if (!depth)
-  //     for (int i = depth; i > 0; i--) {
-  //       ll->head = ll->head->next;
-  //     }
-  //   insert(exec->ll, &forBody);
-  //   exec = exec->next;
-  // }
-
   if (f_node) {
     if (exec->next) {
-      // ll_show(exec->ll);
-      // ll_show(exec->next->ll);
       exec = exec->next;
     }
 
@@ -134,35 +125,27 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
     }
   }
 
+  ll_t *original = NULL;
   while (ACTUAL_MEM_VALUE < for_range) {
     for (dll_node_t *node = forBody->head; node; node = node->next) {
-      // int size = 0;
-      // if (find_operator(node->ll->head, &size)) {
-      //   printf("operator position list: ");
-      //
-      //   int *list = find_operator(node->ll->head, &size);
-      //   int *list2 = list;
-      //   printf("size: %d\n", size);
-      //
-      //   int iterator = 0;
-      //   ll_node_t *current = node->ll->head;
-      //
-      //   while (current != NULL) {
-      //     printf("%s%s%s ", current->data->token,
-      //            iterator == *list2 ? "[operator] " : "",
-      //            current->next ? "->" : "");
-      //     current = current->next;
-      //
-      //     if (iterator == *list2) {
-      //       list2++;
-      //     }
-      //
-      //     iterator++;
-      //   }
-      //
-      //   printf("\n");
-      //   continue;
-      // }
+      if (strcmp(FIRST_NODE->data->token, "print") == 0) {
+        print(node, *mem);
+        continue;
+      }
+
+      if (strcmp(FIRST_NODE->data->token, "def") == 0) {
+        printf("def");
+        continue;
+      }
+
+      ll_t *operator= find_operator(node->ll->head);
+
+      if (operator) {
+
+        original = ll_copy(node->ll);
+        value_t *value = retexpr(operator->head, *mem);
+        clean_operator(operator->head, value, &node->ll->head);
+      }
 
       if (strcmp(FIRST_NODE->data->token, "for") == 0) {
         if (debugFor)
@@ -179,18 +162,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
 
         if (debugFor)
           printf("\t[for end]\n");
-        // printf("for unavailable\n");
-        // exit(EXIT_FAILURE);
-        continue;
-      }
-
-      if (strcmp(FIRST_NODE->data->token, "print") == 0) {
-        print(node, *mem);
-        continue;
-      }
-
-      if (strcmp(FIRST_NODE->data->token, "def") == 0) {
-        printf("def");
         continue;
       }
 
@@ -277,11 +248,10 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
         } else {
           if (!exists(stack_data, *mem)) {
             stack_data.value->identity = V_INT;
-            stack_data.value->v.i = atoi(COMPARE(THIRD_NODE));
+            stack_data.value->v.i = atoi(THIRD_NODE->data->token);
           } else {
-            // avoiding memory leak
-            memcpy(stack_data.value, bringval(THIRD_NODE->data->token, *mem),
-                   sizeof(value_t));
+            stack_data.value = bringval(FIRST_NODE->data->token, *mem);
+            printf("hit");
           }
         }
 
@@ -293,8 +263,8 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
         //   printf("attempt to redeclare variable %s\n", stack_data.data);
         // }
 
+        // memshow(*mem);
         assert(push(stack_data, mem));
-        memshow(*mem);
       } else {
         if (!function_find) {
           function_find = findFunction(FIRST_NODE->data->token, function);
@@ -379,6 +349,11 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
         function_handler(function, mem, 1, function_find);
         if (debugFor)
           printf("\n\tfunction returned\n\n");
+      }
+      if (rebuild_flag) {
+        // node->original;
+        node->ll = original;
+        rebuild_flag = 0;
       }
     }
     for_info.value->v.i++;

@@ -163,8 +163,6 @@ value_t *calcexpr(gll_t *L) {
 
         if (value->identity == V_INT || value->identity == V_FLOAT) {
           if (*op->value->v.str == '*') {
-            printf("resolving: %d %s %d\n", val->value->v.i, op->value->v.str,
-                   value->v.i);
             value->v.i = val->value->v.i * value->v.i;
           } else if (*op->value->v.str == '/') {
             value->v.i = val->value->v.i / value->v.i;
@@ -282,8 +280,8 @@ value_t *retexpr(ll_node_t *list, stacks_t *mem) {
 
   // show_strict_gll(L);
 
-  show_gll(L, 0);
-  printf("\n");
+  // show_gll(L, 0);
+  // printf("\n");
 
   push_gll_stack(&s, L);
   enqueue(&q, L);
