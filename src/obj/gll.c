@@ -21,8 +21,6 @@ void push_gll_stack(gll_s_t **s, gll_t *gll) {
   new->l = gll;
   new->next = (*s);
   (*s) = new;
-
-  printf(" debug: new %p\n", new->l);
 }
 
 gll_t *pop_gll_stack(gll_s_t **s) {
@@ -116,12 +114,12 @@ gll_t *criaT(value_t *value) {
 }
 
 // how this function works:
-// 1. we check if the first value is a number
-// 2. we stack every value and operator and resolve the priority operations
+// 0. we check if the first value is a number
+// 1. we stack every value and operator and resolve the priority operations
 // first
-// 3. we go through all the list
-// 4. if we have any operator left, we resolve it
-// 5. we return the value of the expression
+// 2. we go through all the list
+// 3. if we have any operator left, we resolve it
+// 4. we return the value of the expression
 value_t *calcexpr(gll_t *L) {
   value_t *value = new_value();
   value_s_t *op = NULL;
@@ -130,72 +128,61 @@ value_t *calcexpr(gll_t *L) {
   // stacking every value and operator
   // and resolving the priority operations first
   while (L) {
-    // in the first pass we should check if the first node is a number
-    // if it's not, it's not a valid expression
-    if (value->identity == V_NULL) {
-      if (L->value->identity == V_INT || L->value->identity == V_FLOAT) {
-        value->identity = L->value->identity;
-        value->v.i = L->value->v.i;
-      } else {
-        printf("Error: invalid token\n");
-        exit(EXIT_FAILURE);
-      }
+    if (L->value->identity == V_INT || L->value->identity == V_FLOAT) {
+      value_push(&val, L->value);
       L = L->tail;
       continue;
     }
 
-    // here, we check if the list isn't null,
-    // we check if we have any operator
-    // then we check if the operator is one to resolve during the loop
-    // if it is, we resolve the operation and pop the operator and the value,
-    // attaching the result to the main value
-    if (L && op &&
-        (*op->value->v.str == '*' || *op->value->v.str == '/' ||
-         strcmp(op->value->v.str, "//") == 0 ||
-         strcmp(op->value->v.str, "**") == 0)) {
-
-      if (value->identity == V_INT || value->identity == V_FLOAT) {
-        if (*op->value->v.str == '*') {
-          value->v.i *= val->value->v.i;
-        } else if (*op->value->v.str == '/') {
-          value->v.i /= val->value->v.i;
-        } else if (strcmp(op->value->v.str, "//") == 0) {
-          value->v.i /= val->value->v.i;
-        } else if (strcmp(op->value->v.str, "**") == 0) {
-          value->v.i = pow(value->v.i, val->value->v.i);
-        }
-      }
-
-      value_pop(&val);
-      value_pop(&op);
-      continue;
-    }
-
-    // if isn't a priority operator, we push the operator and the value to the
-    // stacks
     if (L->value->identity == V_OPERATOR) {
       value_push(&op, L->value);
       L = L->tail;
 
-      // if we get a null val, it's an invalid expr
-      if (!L) {
-        printf("Error: invalid expression\n");
-        exit(EXIT_FAILURE);
-      }
+      // here, we check if the list isn't null,
+      // we check if we have any operator
+      // then we check if the operator is one to resolve during the loop
+      // if it is, we resolve the operation and pop the operator and the value,
+      // attaching the result to the main value
+      if (op && (*op->value->v.str == '*' || *op->value->v.str == '/' ||
+                 strcmp(op->value->v.str, "//") == 0 ||
+                 strcmp(op->value->v.str, "**") == 0)) {
 
-      // here we push the next value to the stack
-      // if it's a number, because we need to resolve the operation
-      // later
-      // maybe this function shouldn't be as this
-      if (L->value->identity == V_INT || L->value->identity == V_FLOAT) {
-        value_push(&val, L->value);
+        if (value->identity == V_NULL) {
+          value->identity = val->value->identity;
+          value->v.i = val->value->v.i;
+        } else {
+          value_push(&val, value);
+        }
+
+        if (value->identity == V_INT || value->identity == V_FLOAT) {
+          if (*op->value->v.str == '*') {
+            printf("resolving: %d %s %d\n", val->value->v.i, op->value->v.str,
+                   value->v.i);
+            value->v.i = val->value->v.i * value->v.i;
+          } else if (*op->value->v.str == '/') {
+            value->v.i = val->value->v.i / value->v.i;
+          } else if (strcmp(op->value->v.str, "//") == 0) {
+            value->v.i = val->value->v.i % value->v.i;
+          } else if (strcmp(op->value->v.str, "**") == 0) {
+            value->v.i = pow(value->v.i, val->value->v.i);
+          }
+        }
+
+        value_pop(&val);
+        value_pop(&op);
+        L = L->tail;
       }
     }
-
-    L = L->tail;
   }
 
   // if we have any operator left, we resolve it
+  if (value->identity == V_NULL) {
+    value->identity = val->value->identity;
+    value->v.i = val->value->v.i;
+    value_pop(&val);
+    L = L->tail;
+  }
+
   while (op) {
     if (value->identity == V_INT) {
       if (*op->value->v.str == '+') {
@@ -209,55 +196,50 @@ value_t *calcexpr(gll_t *L) {
     }
   }
 
+  printf("resulting in: %d\n", value->v.i);
   return value;
 }
 
 uint8_t isNull(gll_t *L) { return L == NULL; }
 
-void show_gll(gll_t *head) {
+void show_gll(gll_t *head, int level) {
   gll_t *current = head;
 
   while (current) {
-    if (current->type == 0) {
-      printf("H ");
-      show_gll(current->head);
-    } else {
-      if (current->value->identity == V_INT) {
-        printf("%d ", current->value->v.i);
-      } else if (current->value->identity == V_FLOAT) {
-        printf("%f ", current->value->v.f);
-      } else if (current->value->identity == V_OPERATOR) {
-        printf("%s ", current->value->v.str);
-      } else if (current->value->identity == V_STRING) {
-      }
+
+    if (current->value->identity == V_INT) {
+      printf("%d", current->value->v.i);
+    } else if (current->value->identity == V_FLOAT) {
+      printf("%f", current->value->v.f);
+    } else if (current->value->identity == V_OPERATOR) {
+      printf("%s", current->value->v.str);
+    } else if (current->value->identity == V_STRING) {
+      printf("%s", current->value->v.str);
+    }
+
+    if (current->head) {
+      printf("(");
+      show_gll(current->head, level + 1);
+      printf(")");
     }
 
     current = current->tail;
   }
-  printf("\n");
 }
 
 value_t *retexpr(ll_node_t *list, stacks_t *mem) {
   value_t *value = NULL;
-  gll_t *L = NULL, *atual;
+  gll_t *L = NULL, *actual;
 
   gll_s_t *s = NULL;
   gll_q_t *q = NULL;
 
-  // printf("list: ");
-  // ll_node_t *laux = list;
-  // while (laux) {
-  //   printf("%s ", laux->data->token);
-  //   laux = laux->next;
-  // }
-
   while (list) {
-    // printf("token: %s\n", list->data->token);
     if (!L) {
       if (!existsvar(list->data->token, mem))
-        L = atual = criaT(new_value_infer_type(list->data->token));
+        L = actual = criaT(new_value_infer_type(list->data->token));
       else {
-        L = atual = criaT(bringval(list->data->token, mem));
+        L = actual = criaT(bringval(list->data->token, mem));
       }
       if (L->value->identity == V_NULL) {
         printf("Error: invalid token\n");
@@ -265,68 +247,61 @@ value_t *retexpr(ll_node_t *list, stacks_t *mem) {
       }
     } else {
       if (strcmp(list->data->token, "(") == 0) {
-        atual->tail = criaH();
+        actual->tail = criaH();
         // push do endereço superior
-        push_gll_stack(&s, atual);
+        push_gll_stack(&s, actual);
         list = list->next;
         // e desce
         if (!existsvar(list->data->token, mem))
-          atual->head = criaT(new_value_infer_type(list->data->token));
+          actual->head = criaT(new_value_infer_type(list->data->token));
         else
-          atual->head = criaT(bringval(list->data->token, mem));
-        atual = atual->head;
-      } else if (strcmp(list->data->token, ")") == 0) {
-        // pop devolve o atual pro nivel superior
-        atual = pop_gll_stack(&s);
+          actual->head = criaT(bringval(list->data->token, mem));
+        actual = actual->head;
       } else {
-        if (!existsvar(list->data->token, mem))
-          atual->tail = criaT(new_value_infer_type(list->data->token));
-        else
-          atual->tail = criaT(bringval(list->data->token, mem));
-        atual = atual->tail;
+        if (strcmp(list->data->token, ")") == 0) {
+          // pop devolve o atual pro nivel superior
+          actual = pop_gll_stack(&s);
+        } else {
+          if (!existsvar(list->data->token, mem)) {
+            actual->tail = criaT(new_value_infer_type(list->data->token));
+          } else
+            actual->tail = criaT(bringval(list->data->token, mem));
+
+          actual = actual->tail;
+        }
       }
     }
     list = list->next;
   }
 
-  push_gll_stack(&s, L);
+  // show_strict_gll(L);
 
+  show_gll(L, 0);
+  printf("\n");
+
+  push_gll_stack(&s, L);
   enqueue(&q, L);
 
-  // gll_q_t *auxq = q;
-  // printf(" debug gll_queue\n");
-  // while (auxq) {
-  //   printf(" %p\n", auxq->l);
-  //   auxq = auxq->next;
-  // }
-
-  // empilhando níveis
+  // stacking levels
   while (!gll_q_isEmpty(q)) {
-    atual = dequeue(&q);
+    actual = dequeue(&q);
 
-    while (atual) {
-      if (atual->head) {
-        push_gll_stack(&s, atual);
-        enqueue(&q, atual->head);
+    while (actual) {
+      if (actual->head) {
+        push_gll_stack(&s, actual);
+        enqueue(&q, actual->head);
       }
-      atual = atual->tail;
+      actual = actual->tail;
     }
   }
 
+  // calc nested expressions
   while (!gll_s_isEmpty(s)) {
-    atual = pop_gll_stack(&s);
-    if (atual != L) {
-      atual->value = calcexpr(atual->head);
-      if (atual->value->identity == V_NULL) {
-        printf("Error: invalid token\n");
-        exit(EXIT_FAILURE);
-      }
-      if (atual->value->identity == V_INT ||
-          atual->value->identity == V_FLOAT) {
-        atual->type = 1;
-      }
+    actual = pop_gll_stack(&s);
+    if (actual != L) {
+      actual->tail->value = calcexpr(actual->head);
     } else {
-      value = calcexpr(atual);
+      value = calcexpr(actual);
     }
   }
 

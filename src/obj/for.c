@@ -252,8 +252,6 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
         printf("function position: %p\n", function_find);
       }
 
-      // TODO: this part isn't working properly due to parenthesis in the
-      // tokens
       if (*SECOND_NODE->data->token == '=' && !function_find) {
         strcpy(stack_data.data, FIRST_NODE->data->token);
         if (*THIRD_NODE->data->token == '"') {

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TESTING 1
+
 ll_t *ll_create(size_t line) {
   ll_t *new = calloc(1, sizeof(ll_t));
   new->head = NULL;
@@ -42,6 +44,9 @@ ll_node_t *ll_get(ll_node_t *head, size_t index) {
 
   ll_node_t *current = head;
   for (size_t i = 0; i < index; i++) {
+    if (!current) {
+      return NULL;
+    }
     current = current->next;
   }
 
@@ -115,8 +120,7 @@ ll_t *ll_copy(ll_t *ll) {
   return new;
 }
 
-// TODO: failing to handle parenthesis
-ll_node_t *find_operator(ll_node_t *head) {
+ll_t *find_operator(ll_node_t *head) {
   ll_t *expression = ll_create(0);
 
   ll_node_t *current = head;
@@ -125,8 +129,8 @@ ll_node_t *find_operator(ll_node_t *head) {
   int *size = calloc(1, sizeof(int));
 
   while (current != NULL) {
-    if (classifier(current->data->token) == OPERATOR) {
-
+    if (classifier(current->data->token) == OPERATOR ||
+        classifier(current->data->token) == PARENTHESIS) {
       operators = realloc(operators, (positions + 1) * sizeof(int));
       operators[*size] = positions;
       *size += 1;
@@ -135,28 +139,41 @@ ll_node_t *find_operator(ll_node_t *head) {
     current = current->next;
   }
 
-  if (*size == 0) {
+  int i = 0;
+  current = head;
+  while (current) {
+    if (classifier(current->data->token) == OPERATOR)
+      break;
+    current = current->next;
+  }
+
+  if (!current || *size == 0) {
     return NULL;
   }
 
-  int i = 0;
-  int pos = operators[0];
+  int first_operator = operators[0];
+  int last_operator = operators[*size - 1];
 
-  ll_insert(*(ll_get(head, pos - 1)->data), &expression);
-  while (i < *size) {
-    if (!ll_get(head, pos + 1)) {
-      printf("Invalid expression\n");
-      exit(EXIT_FAILURE);
-    }
-    if (strcmp(ll_get(head, pos)->data->token, ")") == 0) {
-      printf("Invalid expression\n");
-      exit(EXIT_FAILURE);
-    }
+  if (strcmp(ll_get(head, first_operator)->data->token, ")") == 0) {
+    printf("Invalid expression\n");
+    exit(EXIT_FAILURE);
+  }
 
-    ll_insert(*(ll_get(head, pos)->data), &expression);
-    ll_insert(*(ll_get(head, pos + 1)->data), &expression);
-    i++;
-    pos = operators[i];
+  if (!ll_get(head, first_operator + 1)) {
+    printf("Invalid expression\n");
+    exit(EXIT_FAILURE);
+  }
+
+  ll_insert(*(ll_get(head, first_operator - 1)->data), &expression);
+  while (first_operator <= last_operator) {
+
+    ll_insert(*(ll_get(head, first_operator)->data), &expression);
+    first_operator++;
+  }
+
+  ll_node_t *current2 = ll_get(head, first_operator);
+  if (current2 && strcmp(ll_get(head, first_operator)->data->token, ")") != 0) {
+    ll_insert(*(ll_get(head, first_operator)->data), &expression);
   }
 
   expression->relline = (operators[0]) - 1;
@@ -164,5 +181,5 @@ ll_node_t *find_operator(ll_node_t *head) {
   free(operators);
   free(size);
 
-  return expression->head;
+  return expression;
 }

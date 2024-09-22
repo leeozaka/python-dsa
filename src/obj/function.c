@@ -8,7 +8,7 @@
 
 #define NO_DEPTH 0
 
-int debugFunction = 1;
+int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
                       dll_node_t *f_node) {
@@ -57,9 +57,14 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
-    ll_node_t *operator= find_operator(node->ll->head);
+    // ll_node_t *operator= find_operator(node->ll->head);
+
+    // using the full list type because operator contains the first
+    // element found inside the original list
+    ll_t *operator= find_operator(node->ll->head);
     if (operator) {
-      value_t *value = retexpr(operator, * mem);
+      ll_show(operator);
+      value_t *value = retexpr(operator->head, *mem);
       printf("result of expression = %d\n", value->v.i);
 
       printf(" exiting\n");
