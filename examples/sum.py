@@ -1,9 +1,5 @@
-def printa(nome):
-    print(nome)
+var1 = 1 * 2 + (2 * 2)
+var2 = var1 * 3
 
-nome1 = "leonardo"
-nome2 = "neves"
-nome3 = "santos"
+print("var1: %d\n" % var2)
 
-printa(nome2)
-# nome4 = nome1 / (nome2 + nome3)

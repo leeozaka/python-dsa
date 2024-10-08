@@ -128,23 +128,27 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
   ll_t *original = NULL;
   while (ACTUAL_MEM_VALUE < for_range) {
     for (dll_node_t *node = forBody->head; node; node = node->next) {
-      if (strcmp(FIRST_NODE->data->token, "print") == 0) {
-        print(node, *mem);
-        continue;
-      }
-
-      if (strcmp(FIRST_NODE->data->token, "def") == 0) {
-        printf("def");
+      if (strcmp(FIRST_NODE->data->token, "if") == 0) {
+        printf("if function\n");
         continue;
       }
 
       ll_t *operator= find_operator(node->ll->head);
 
       if (operator) {
-
         original = ll_copy(node->ll);
         value_t *value = retexpr(operator->head, *mem);
         clean_operator(operator->head, value, &node->ll->head);
+        rebuild_flag = 1;
+      }
+
+      if (strcmp(FIRST_NODE->data->token, "print") == 0) {
+        print(node, *mem);
+        continue;
+      }
+
+      if (strcmp(FIRST_NODE->data->token, "def") == 0) {
+        continue;
       }
 
       if (strcmp(FIRST_NODE->data->token, "for") == 0) {
@@ -247,8 +251,13 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
           strcpy(stack_data.value->v.str, dest);
         } else {
           if (!exists(stack_data, *mem)) {
-            stack_data.value->identity = V_INT;
-            stack_data.value->v.i = atoi(THIRD_NODE->data->token);
+            stack_data_t aux;
+            strcpy(aux.data, THIRD_NODE->data->token);
+            if (!exists(aux, *mem)) {
+              stack_data.value = new_value_infer_type(THIRD_NODE->data->token);
+            } else {
+              stack_data.value = bringval(THIRD_NODE->data->token, *mem);
+            }
           } else {
             stack_data.value = bringval(FIRST_NODE->data->token, *mem);
           }
@@ -355,6 +364,10 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
         rebuild_flag = 0;
       }
     }
+
+    while (strcmp(peek(*mem)->data->data, for_info.data) != 0)
+      pop(mem);
+
     for_info.value->v.i++;
     replace_mem(for_info, *mem);
   }

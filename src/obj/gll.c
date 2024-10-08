@@ -134,12 +134,6 @@ value_t *calcexpr(gll_t *L) {
       continue;
     }
 
-    if (L->value->identity == V_INT || L->value->identity == V_FLOAT) {
-      value_push(&val, L->value);
-      L = L->tail;
-      continue;
-    }
-
     if (L->value->identity == V_OPERATOR) {
       value_push(&op, L->value);
       L = L->tail;
@@ -258,8 +252,9 @@ value_t *retexpr(ll_node_t *list, stacks_t *mem) {
         // e desce
         if (!existsvar(list->data->token, mem))
           actual->head = criaT(new_value_infer_type(list->data->token));
-        else
+        else {
           actual->head = criaT(bringval(list->data->token, mem));
+        }
         actual = actual->head;
       } else {
         if (strcmp(list->data->token, ")") == 0) {

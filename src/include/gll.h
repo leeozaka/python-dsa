@@ -1,6 +1,4 @@
-#ifndef GLL_H
-#define GLL_H
-
+#pragma once
 #include "data.h"
 #include "ll.h"
 #include "stack.h"
@@ -54,5 +52,3 @@ value_t *retexpr(ll_node_t *ll, stacks_t *mem);
 value_t *calcexpr(gll_t *L);
 
 uint8_t isEqual(gll_t *L1, gll_t *L2);
-
-#endif

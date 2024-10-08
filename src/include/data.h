@@ -1,6 +1,4 @@
-#ifndef DATA_H
-#define DATA_H
-
+#pragma once
 #include <stdint.h>
 
 #define STRSIZE 256
@@ -25,5 +23,3 @@ enum {
 typedef struct TOKEN_DATA_H {
   char token[TOKENSIZE];
 } token_data_t;
-
-#endif

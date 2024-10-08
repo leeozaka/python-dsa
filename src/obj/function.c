@@ -59,6 +59,11 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
   ll_t *original = NULL;
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
+    if (strcmp(FIRST_NODE->data->token, "if") == 0) {
+      printf("if function\n");
+      continue;
+    }
+
     if (strcmp(FIRST_NODE->data->token, "def") == 0) {
       continue;
     }
@@ -72,11 +77,10 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     ll_t *operator= find_operator(node->ll->head);
 
     if (operator) {
-
       original = ll_copy(node->ll);
-
       value_t *value = retexpr(operator->head, *mem);
       clean_operator(operator->head, value, &node->ll->head);
+      rebuild_flag = 1;
     }
 
     if (strcmp(FIRST_NODE->data->token, "for") == 0) {
@@ -285,6 +289,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
       if (debugFunction)
         printf("\n\tfunction returned\n\n");
     }
+
     if (rebuild_flag) {
       // node->original;
       node->ll = original;

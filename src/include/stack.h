@@ -1,6 +1,4 @@
-#ifndef STACK_H
-#define STACK_H
-
+#pragma once
 #include "data.h"
 #include "dll.h"
 #include "value.h"
@@ -43,5 +41,3 @@ uint8_t exists(stack_data_t data, stacks_t *stack);
 uint8_t existsvar(const char *var, stacks_t *stack);
 
 void clear_stack(stacks_t **stack);
-
-#endif

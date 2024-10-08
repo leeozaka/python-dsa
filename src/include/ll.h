@@ -1,6 +1,4 @@
-#ifndef LL_H
-#define LL_H
-
+#pragma once
 #include "data.h"
 #include "value.h"
 #include <stdint.h>
@@ -39,5 +37,3 @@ uint8_t clean_operator(ll_node_t *op_head, value_t *value,
                        ll_node_t **dest_node);
 
 void ll_show(ll_t *ll);
-
-#endif

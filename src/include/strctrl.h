@@ -1,6 +1,4 @@
-#ifndef STRCTRL_H
-#define STRCTRL_H
-
+#pragma once
 #define FIRST_NODE node->ll->head
 #define SECOND_NODE node->ll->head->next
 #define THIRD_NODE node->ll->head->next->next
@@ -17,5 +15,3 @@
 
 int classifier(char *c);
 int startsWithFourSpaces(const char *str);
-
-#endif

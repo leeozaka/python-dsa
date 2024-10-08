@@ -1,6 +1,4 @@
-#ifndef DLL_H_
-#define DLL_H_
-
+#pragma once
 #include "data.h"
 #include "ll.h"
 #include <stdlib.h>
@@ -33,5 +31,3 @@ uint8_t replace(ll_t *ll, size_t index, dll_node_t **head);
 size_t position(ll_t *ll, dll_node_t **head);
 
 dll_node_t *findFunction(const char *name, dll_t *head);
-
-#endif
