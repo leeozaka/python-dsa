@@ -10,6 +10,7 @@
 #include "include/ll.h"
 #include "include/stack.h"
 #include "include/strctrl.h"
+#include "include/window.h"
 
 #define NO_DEPTH 0
 
@@ -26,14 +27,17 @@ void segvHandler() {
 
 int debug = 0;
 
+char rep[100][300];
+int line_number = 0;
+
 int main() {
 #ifdef _WIN64
   signal(SIGSEGV, segvHandler);
 #endif
 
   int type;
-  size_t index = 0, line_number = 0;
-  char token_text[TOKENSIZE] = "", *line, rep[TOKENSIZE][300];
+  size_t index = 0;
+  char token_text[TOKENSIZE] = "", *line;
   token_data_t token;
 
   struct dirent *entry;
@@ -43,6 +47,8 @@ int main() {
   if (dir == NULL) {
     return -1;
   }
+
+  checkwnd();
 
   // allocate memory for up to 100 files
   // but problably you will not have 100 files in the directory lol
@@ -182,5 +188,8 @@ int main() {
 
     printf("\t end \n");
   }
+
+  textcolor(WHITE);
+  textbackground(BLACK);
   return 0;
 }

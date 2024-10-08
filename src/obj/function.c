@@ -2,9 +2,11 @@
 #include "../include/for.h"
 #include "../include/gll.h"
 #include "../include/strctrl.h"
+#include "../include/window.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <windows.h>
 
 #define NO_DEPTH 0
 
@@ -56,9 +58,50 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
     }
   }
 
+  DWORD cNumRead, fdwMode;
+  INPUT_RECORD irInBuf;
+
+  HANDLE hStdin;
+  hStdin = GetStdHandle(STD_INPUT_HANDLE);
+  if (hStdin == INVALID_HANDLE_VALUE) {
+    exit(3);
+  }
+
+  fdwMode = ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
+  system("cls");
+
+  SetConsoleMode(hStdin, fdwMode);
+
   ll_t *original = NULL;
   // memory loop start
   for (dll_node_t *node = body->head; node; node = node->next) {
+    window_draw(node->ll->relline);
+    uint8_t returnPressed = 0;
+
+    do {
+      ReadConsoleInput(hStdin, &irInBuf, 1, &cNumRead);
+      switch (irInBuf.EventType) {
+      case KEY_EVENT:
+        if (irInBuf.Event.KeyEvent.bKeyDown) {
+          if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'q') {
+            system("cls");
+            exit(1);
+          }
+          if (irInBuf.Event.KeyEvent.uChar.AsciiChar == '\r') {
+            returnPressed = 1;
+          }
+          if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'm') {
+            // one day, memshow will be here
+          }
+        }
+        break;
+      case WINDOW_BUFFER_SIZE_EVENT:
+        checkwnd();
+        window_draw(node->ll->relline);
+        break;
+      }
+    } while (!returnPressed);
+
     if (strcmp(FIRST_NODE->data->token, "if") == 0) {
       printf("if function\n");
       continue;
@@ -103,6 +146,7 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
 
     if (strcmp(FIRST_NODE->data->token, "print") == 0) {
       print(node, *mem);
+      window_draw(node->ll->relline);
       continue;
     }
 
