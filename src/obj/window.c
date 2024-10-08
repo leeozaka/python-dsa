@@ -12,7 +12,7 @@
 #define ROW 196
 #define COL 179
 
-static const info_t expect = {0, 0, 0, 0, 131, 35};
+static const info_t expect = {0, 0, 0, 0, 131, 39};
 
 extern char rep[100][300];
 extern int line_number;
@@ -100,7 +100,7 @@ info_t checkwnd() {
   return window;
 }
 
-inline uint8_t window_verify() {
+uint8_t window_verify() {
   info_t w;
 
   gettextinfo(&w);

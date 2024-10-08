@@ -10,6 +10,7 @@ int printFunction = 0;
 
 void print(dll_node_t *node, stacks_t *mem) {
   char printappend[300] = "";
+  char str[12] = "";
 
   value_t *val = new_value();
   if (*THIRD_NODE->data->token == '"') {
@@ -26,15 +27,11 @@ void print(dll_node_t *node, stacks_t *mem) {
     if (printnode)
       printnode = printnode->next;
 
-    // if (printFunction) {
-    //   printf("printnode: %s\n", printnode->data->token);
-    // }
-
     for (printc = (char *)printstr; *printc != '\0';) {
       while (*printc != '%' && *printc != '\0' && *printc != '"' &&
              *printc != '\\') {
-        strcat(printappend, printc);
-        // putchar(*printc);
+        char temp[2] = {*printc, '\0'};
+        strcat(printappend, temp);
         printc++;
       }
       if (*printc == '%' || *printc == '\\') {
@@ -44,13 +41,11 @@ void print(dll_node_t *node, stacks_t *mem) {
           val = bringval(printnode->data->token, mem);
 
           if (val) {
-            char str[12];
             if (val->identity == V_INT) {
               sprintf(str, "%d", val->v.i);
               strcat(printappend, str);
             } else {
               strcat(printappend, printnode->data->token);
-              fprintf(stdout, "%d", atoi(printnode->data->token));
             }
           } else {
             printf("variable %s not found\n", printnode->data->token);
@@ -62,8 +57,6 @@ void print(dll_node_t *node, stacks_t *mem) {
           break;
 
         case 'n':
-          fprintf(stdout, "\n");
-          strcat(printappend, "\n");
           printc++;
           break;
 
@@ -71,15 +64,11 @@ void print(dll_node_t *node, stacks_t *mem) {
           val = bringval(printnode->data->token, mem);
 
           if (val) {
-            char str[12];
             if (val->identity == V_FLOAT) {
               sprintf(str, "%f", val->v.f);
               strcat(printappend, str);
-
-              // fprintf(stdout, "%f", val->v.f);
             } else {
               strcat(printappend, printnode->data->token);
-              // fprintf(stdout, "%f", atof(printnode->data->token));
             }
           } else {
             printf("variable %s not found\n", printnode->data->token);
@@ -97,23 +86,16 @@ void print(dll_node_t *node, stacks_t *mem) {
 
           if (val) {
             switch (val->identity) {
-              char str[12];
             case V_INT:
               sprintf(str, "%d", val->v.i);
               strcat(printappend, str);
-
-              // fprintf(stdout, "%d", val->v.i);
               break;
             case V_FLOAT:
               sprintf(str, "%f", val->v.f);
               strcat(printappend, str);
-
-              // fprintf(stdout, "%f", val->v.f);
               break;
             case V_STRING:
               strcat(printappend, val->v.str);
-
-              // fprintf(stdout, "%s", val->v.str);
               break;
             }
           } else {
@@ -139,26 +121,21 @@ void print(dll_node_t *node, stacks_t *mem) {
         case V_INT:
           sprintf(str, "%d", val->v.i);
           strcat(printappend, str);
-
-          // fprintf(stdout, "%d ", val->v.i);
           break;
         case V_FLOAT:
           sprintf(str, "%f", val->v.f);
           strcat(printappend, str);
-          // fprintf(stdout, "%f ", val->v.f);
           break;
         case V_STRING:
           strcat(printappend, val->v.str);
-          // fprintf(stdout, "%s", val->v.str);
           break;
         }
       } else {
         strcat(printappend, printnode->data->token);
-        // fprintf(stdout, "%s", printnode->data->token);
       }
       printnode = printnode->next;
     }
-
-    appendConsoleLine(printappend);
   }
+
+  appendConsoleLine(printappend);
 }
