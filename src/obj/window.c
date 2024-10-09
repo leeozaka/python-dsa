@@ -212,24 +212,24 @@ void wmemshow(stacks_t *stack) {
   stack_node_t *node = stack->top;
   fprintf(stdout, " size: %zu\n", stack->size);
   gotoxy(padding_x + 70, padding_y + line++);
-  fprintf(stdout, "Data - Type - Value - Address \n");
+  fprintf(stdout, "Data  Type     Value      Address \n");
 
   while (node) {
     gotoxy(padding_x + 70, padding_y + line++);
     if (node->data->value->identity == V_INT) {
-      fprintf(stdout, "%s %s %d %p", node->data->data, "INT",
+      fprintf(stdout, "%-5s %-8s %10d %p", node->data->data, "INT", 
               node->data->value->v.i, node->data->address);
     }
     if (node->data->value->identity == V_STRING) {
-      fprintf(stdout, "%s %s \"%s\" %p", node->data->data, "STR",
+      fprintf(stdout, "%-5s %-8s %-10s %p", node->data->data, "STR", 
               node->data->value->v.str, node->data->address);
     }
     if (node->data->value->identity == V_FLOAT) {
-      fprintf(stdout, "%s %s %f %p", node->data->data, "FLOAT",
+      fprintf(stdout, "%-5s %-8s %10f %p", node->data->data, "FLOAT", 
               node->data->value->v.f, node->data->address);
     }
     if (node->data->value->identity == V_NULL) {
-      fprintf(stdout, "%s %s %d %p", node->data->data, "NULL",
+      fprintf(stdout, "%-5s %-8s %10d %p", node->data->data, "NULL", 
               node->data->value->v.i, node->data->address);
     }
 

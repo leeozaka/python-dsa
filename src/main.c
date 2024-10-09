@@ -35,6 +35,8 @@ int main() {
   signal(SIGSEGV, segvHandler);
 #endif
 
+  system("cls");
+
   int type;
   size_t index = 0;
   char token_text[TOKENSIZE] = "", *line;
