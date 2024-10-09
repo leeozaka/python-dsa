@@ -48,7 +48,10 @@ int main() {
     return -1;
   }
 
-  checkwnd();
+  if (!window_verify()) {
+    alert();
+    checkwnd();
+  }
 
   // allocate memory for up to 100 files
   // but problably you will not have 100 files in the directory lol

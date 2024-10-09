@@ -13,6 +13,7 @@
 #define ACTUAL_MEM_VALUE bring(for_info.data, *mem)->data->value->v.i
 
 int debugFor = 0;
+extern DWORD debounceTime;
 
 // for handler going to be a minified version of
 // the function handler, and it's going to be controlled
@@ -147,18 +148,25 @@ size_t for_handler(dll_t *function, stacks_t **mem, int depth,
             if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'q') {
               system("cls");
               exit(1);
-            }
-            if (irInBuf.Event.KeyEvent.uChar.AsciiChar == '\r') {
+            } else if (irInBuf.Event.KeyEvent.uChar.AsciiChar == '\r') {
               returnPressed = 1;
-            }
-            if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'm') {
-              // one day, memshow will be here
+            } else if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'm') {
+              wmemshow(*mem);
+            } else {
+              window_draw(node->ll->relline);
             }
           }
           break;
         case WINDOW_BUFFER_SIZE_EVENT:
-          checkwnd();
-          window_draw(node->ll->relline);
+          DWORD actualTime = GetTickCount();
+          if (!window_verify()) {
+            alert();
+            checkwnd();
+          }
+          if (actualTime - debounceTime < actualTime) {
+            window_draw(node->ll->relline);
+            debounceTime = actualTime;
+          }
           break;
         }
       } while (!returnPressed);

@@ -12,7 +12,9 @@
 #define ROW 196
 #define COL 179
 
-static const info_t expect = {0, 0, 0, 0, 131, 39};
+#define maxWidth 50
+
+static const info_t expect = {0, 0, 0, 0, 130, 30};
 
 extern char rep[100][300];
 extern int line_number;
@@ -24,18 +26,18 @@ static const struct errtext {
   char *msg;
   char *confirmdialog;
   char *msg2;
-} errtext = {"Por favor, aumente a resolucao da tela para 130x40 ou mais",
+} errtext = {"Por favor, aumente a resolucao da tela para 130x30 ou mais",
              "Aumente a resolucao da tela para continuar",
              "Pressione 'q' para sair"};
 
-info_t checkwnd() {
-  textbackground(BLACK);
-  textcolor(WHITE);
-
-  info_t window;
-  gettextinfo(&window);
-
+void checkwnd() {
   if (!window_verify()) {
+    textbackground(BLACK);
+    textcolor(WHITE);
+
+    info_t window;
+    gettextinfo(&window);
+
     DWORD cNumRead, fdwMode;
     INPUT_RECORD irInBuf;
 
@@ -52,9 +54,6 @@ info_t checkwnd() {
 
     int x = (window.screenwidth - strlen(errtext.msg)) / 2;
     int y = window.screenheight / 2;
-
-    for (int i = 0; i < 3; i++)
-      flashbackground(RED, 100);
 
     do {
       system("cls");
@@ -91,13 +90,12 @@ info_t checkwnd() {
       }
 
     } while (
-        irInBuf.Event.WindowBufferSizeEvent.dwSize.X < expect.screenwidth ||
-        irInBuf.Event.WindowBufferSizeEvent.dwSize.Y < expect.screenheight);
+        irInBuf.Event.WindowBufferSizeEvent.dwSize.X < expect.screenwidth + 1 ||
+        irInBuf.Event.WindowBufferSizeEvent.dwSize.Y < expect.screenheight + 1);
   }
-  gettextinfo(&window);
+  textbackground(BLACK);
+  textcolor(WHITE);
   system("cls");
-
-  return window;
 }
 
 uint8_t window_verify() {
@@ -111,8 +109,6 @@ uint8_t window_verify() {
 int padding_x, padding_y;
 
 void window_draw(int curline) {
-  checkwnd();
-
   info_t w;
 
   gettextinfo(&w);
@@ -166,17 +162,32 @@ void window_draw(int curline) {
       textcolor(WHITE);
     }
     printf("%s", rep[x]);
+    textbackground(BLACK);
     gotoxy(padding_x + 1, padding_y + 1 + (x + 1));
   }
+
+  gotoxy(padding_x + 1, padding_y + expect.screenheight - 11);
+  printf("Console:");
 
   // goto the bottom -10 of the pwindow
   //(this will be our console?)
   gotoxy(padding_x + 1, padding_y + expect.screenheight - 10);
-  for (int x = 0; x < consoleLineCount && x < 10; x++) {
-    textbackground(BLACK);
-    textcolor(WHITE);
-    printf("%s", console[x]);
-    gotoxy(padding_x + 1, padding_y + expect.screenheight - 10 + (x + 1));
+
+  if (consoleLineCount <= 10) {
+    for (int i = 0; i < consoleLineCount && i < 10; i++) {
+      textbackground(BLACK);
+      textcolor(WHITE);
+      printf("%.*s", maxWidth, console[i]);
+      gotoxy(padding_x + 1, padding_y + expect.screenheight - 10 + (i + 1));
+    }
+  } else {
+    for (int x = consoleLineCount - 10, i = 0; x <= consoleLineCount;
+         x++, i++) {
+      textbackground(BLACK);
+      textcolor(WHITE);
+      printf("%.*s", maxWidth, console[x]);
+      gotoxy(padding_x + 1, padding_y + expect.screenheight - 10 + (i + 1));
+    }
   }
 
   gotoxy(padding_x + expect.screenwidth, padding_y + expect.screenheight);
@@ -184,5 +195,44 @@ void window_draw(int curline) {
 
 void appendConsoleLine(char *line) {
   strcpy(console[consoleLineCount], line);
-  consoleLineCount+=1;
+  consoleLineCount += 1;
+}
+
+void alert() {
+  system("cls");
+  for (int i = 0; i < 3; i++)
+    flashbackground(RED, 100);
+}
+
+void wmemshow(stacks_t *stack) {
+  int line = 1;
+  gotoxy(padding_x + 70, padding_y + line++);
+  printf("Mem");
+
+  stack_node_t *node = stack->top;
+  fprintf(stdout, " size: %zu\n", stack->size);
+  gotoxy(padding_x + 70, padding_y + line++);
+  fprintf(stdout, "Data - Type - Value - Address \n");
+
+  while (node) {
+    gotoxy(padding_x + 70, padding_y + line++);
+    if (node->data->value->identity == V_INT) {
+      fprintf(stdout, "%s %s %d %p", node->data->data, "INT",
+              node->data->value->v.i, node->data->address);
+    }
+    if (node->data->value->identity == V_STRING) {
+      fprintf(stdout, "%s %s \"%s\" %p", node->data->data, "STR",
+              node->data->value->v.str, node->data->address);
+    }
+    if (node->data->value->identity == V_FLOAT) {
+      fprintf(stdout, "%s %s %f %p", node->data->data, "FLOAT",
+              node->data->value->v.f, node->data->address);
+    }
+    if (node->data->value->identity == V_NULL) {
+      fprintf(stdout, "%s %s %d %p", node->data->data, "NULL",
+              node->data->value->v.i, node->data->address);
+    }
+
+    node = node->next;
+  }
 }

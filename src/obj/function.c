@@ -10,6 +10,7 @@
 
 #define NO_DEPTH 0
 
+DWORD debounceTime = 250;
 int debugFunction = 0;
 
 void function_handler(dll_t *function, stacks_t **mem, int depth,
@@ -86,18 +87,25 @@ void function_handler(dll_t *function, stacks_t **mem, int depth,
           if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'q') {
             system("cls");
             exit(1);
-          }
-          if (irInBuf.Event.KeyEvent.uChar.AsciiChar == '\r') {
+          } else if (irInBuf.Event.KeyEvent.uChar.AsciiChar == '\r') {
             returnPressed = 1;
-          }
-          if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'm') {
-            // one day, memshow will be here
+          } else if (irInBuf.Event.KeyEvent.uChar.AsciiChar == 'm') {
+            wmemshow(*mem);
+          } else {
+            window_draw(node->ll->relline);
           }
         }
         break;
       case WINDOW_BUFFER_SIZE_EVENT:
-        checkwnd();
-        window_draw(node->ll->relline);
+        DWORD actualTime = GetTickCount();
+        if (!window_verify()) {
+          alert();
+          checkwnd();
+        }
+        if (actualTime - debounceTime < actualTime) {
+          window_draw(node->ll->relline);
+          debounceTime = actualTime;
+        }
         break;
       }
     } while (!returnPressed);
