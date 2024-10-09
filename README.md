@@ -19,6 +19,9 @@ This program emulates a stack memory. Variables go to the stack and functions ha
 ### How it works 1.1: Meth
 Mathematics are handled with a [f* strange linked lists structure](https://www.geeksforgeeks.org/generalized-linked-list/). The first thing that the loop seeks for, it's for a operation (like +, -, //, etc), resolves them, and leaves a rebuild flag. The program continues normally, and at the end of the loop, rebuilds the line (if we need of the original line further, like in a for loop). It could be a little more sophisticated, but i was running out of ideas.
 
+![image](https://github.com/user-attachments/assets/e05816ff-2a08-4b5e-bc39-9ce09839ebef)
+in this example, it's in the middle of the execution of for.py and i pressed 'm' to show the stack memory. How cool is that?
+
 ## Installation
 It was built using a Makefile with clangd compiler. Everything you'll need, until the CLI, can be built at almost any platform. When the graphic part gets implemented, it will use a lot of windows console api, so, use a Windows machine to build
 
